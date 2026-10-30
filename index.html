@@ -1,0 +1,1768 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Singer's Atlas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a practice-room app. A staff-ruled chapter rail on the left (scrolling tabs on phones) with a live oscilloscope of whatever is sounding; one chapter on screen at a time, routed by #hash. */
+:root{
+  --bg:#edf0f5; --surface:#ffffff; --sunk:#e3e8f0; --line:#cdd4df;
+  --ink:#141a2a; --muted:#566079; --accent:#2b47c9; --accent-ink:#ffffff; --accent-soft:#dde3fb;
+  --voice:#d2412f; --voice-soft:#fbe2dc; --gold:#9a6b00; --gold-soft:#f6ead0;
+  --good:#2b7a4b; --warn:#a86300; --bad:#bf3328;
+  --c1:#c2366b; --c2:#d0632b; --c3:#a8851a; --c4:#3f8f4a; --c5:#1f8a8a; --c6:#2b62c9; --c7:#6b4cc4;
+  --display:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1320; --surface:#171c2c; --sunk:#1f2539; --line:#2e3752;
+  --ink:#e8ecf6; --muted:#9aa3bd; --accent:#93a5ff; --accent-ink:#0d1330; --accent-soft:#232c55;
+  --voice:#ff7f6c; --voice-soft:#3b2024; --gold:#e3b54d; --gold-soft:#3a3020;
+  --good:#5cc489; --warn:#f0a547; --bad:#ff7a6e;
+  --c1:#f06aa0; --c2:#f38b54; --c3:#e0bd4a; --c4:#6fcf7b; --c5:#4fd0cf; --c6:#7aa2ff; --c7:#ad94ff;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1320; --surface:#171c2c; --sunk:#1f2539; --line:#2e3752;
+  --ink:#e8ecf6; --muted:#9aa3bd; --accent:#93a5ff; --accent-ink:#0d1330; --accent-soft:#232c55;
+  --voice:#ff7f6c; --voice-soft:#3b2024; --gold:#e3b54d; --gold-soft:#3a3020;
+  --good:#5cc489; --warn:#f0a547; --bad:#ff7a6e;
+  --c1:#f06aa0; --c2:#f38b54; --c3:#e0bd4a; --c4:#6fcf7b; --c5:#4fd0cf; --c6:#7aa2ff; --c7:#ad94ff;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:16px/1.6 var(--body);margin:0}
+a{color:var(--accent)}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+/* Rail */
+.rail{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--line);padding:22px 0 28px;display:flex;flex-direction:column;gap:14px}
+.brand{padding:0 22px}
+.brand h1{font:400 2.1rem/1 var(--display);margin:0;letter-spacing:-.01em}
+.brand h1 em{color:var(--voice)}
+.brand p{margin:.35rem 0 0;color:var(--muted);font-size:.85rem;line-height:1.4}
+.scope{margin:0 22px;height:54px;border-radius:10px;background:var(--sunk);position:relative;overflow:hidden}
+.scope canvas{width:100%;height:100%;display:block}
+.scope span{position:absolute;left:10px;top:6px;font:500 .62rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.toc{display:flex;flex-direction:column}
+.toc .grp{font:600 .68rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:14px 22px 6px}
+.toc a{display:flex;align-items:center;gap:10px;padding:7px 22px;text-decoration:none;color:var(--ink);font-size:.93rem;border-left:3px solid transparent;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 6px,color-mix(in srgb,var(--line) 0%,transparent) 6px 7px)}
+.toc a .k{font:500 .7rem var(--mono);color:var(--muted);width:1.6em}
+.toc a:hover{background:var(--sunk)}
+.toc a[aria-current="page"]{border-left-color:var(--voice);background:var(--voice-soft);font-weight:600}
+.lvl-dots{margin-left:auto;display:flex;gap:3px}
+.lvl-dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.lvl-dots i.on{background:var(--accent)}
+/* Main */
+main{min-width:0;padding-block:34px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.chapter{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.eyebrow{font:600 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--voice)}
+h2{font:400 clamp(2.2rem,4.5vw,3.4rem)/1.02 var(--display);margin:.3rem 0 .6rem;letter-spacing:-.01em;text-wrap:balance}
+h3{font:400 1.75rem/1.1 var(--display);margin:0 0 .5rem;text-wrap:balance}
+h4{font:700 1rem/1.3 var(--body);margin:0 0 .35rem}
+p{margin:0 0 .7rem;max-width:68ch}
+.lede{font-size:1.12rem;color:var(--muted);max-width:62ch}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.mono{font-family:var(--mono)}
+.block{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.sunk{background:var(--sunk);border-radius:var(--r);padding:18px;min-width:0}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+ul.clean{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+ul.ticks{padding-left:1.1em;margin:0}
+ul.ticks li{margin:.2rem 0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 15px;cursor:pointer;font-weight:600;font-size:.9rem;display:inline-flex;align-items:center;gap:7px;line-height:1.2}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.btn.rec{background:var(--voice);border-color:var(--voice);color:#fff}
+.btn.small{padding:4px 11px;font-size:.8rem}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.play-ico{width:0;height:0;border-left:8px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
+select,input[type=number],input[type=text],input[type=date],textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted);font-weight:600}
+input[type=range]{accent-color:var(--accent)}
+.pill{display:inline-block;font:600 .7rem/1 var(--body);letter-spacing:.04em;padding:5px 9px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.pill.b{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.pill.i{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.pill.a{background:color-mix(in srgb,var(--voice) 16%,transparent);color:var(--voice)}
+.callout{border-left:3px solid var(--gold);background:var(--gold-soft);padding:12px 16px;border-radius:0 10px 10px 0}
+.callout.red{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+svg text{font-family:var(--body)}
+.diagram{width:100%;height:auto;display:block}
+.dwrap{overflow-x:auto}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.hint{font-size:.8rem;color:var(--muted)}
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:center}
+.hero h2{font-size:clamp(2.8rem,6vw,4.6rem)}
+.hero h2 em{color:var(--voice)}
+.staffcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+/* Piano */
+.piano{position:relative;height:120px;user-select:none;min-width:560px}
+.piano .wk,.piano .bk{position:absolute;top:0;border:1px solid var(--line);cursor:pointer;display:flex;align-items:flex-end;justify-content:center}
+.piano .wk{background:#fbfcfe;height:100%;border-radius:0 0 6px 6px;font:500 .55rem var(--mono);color:#7a8297;padding-bottom:4px}
+.piano .bk{background:#1b2133;height:62%;border-radius:0 0 4px 4px;z-index:2;border-color:#1b2133}
+.piano .wk.hit{background:var(--accent-soft)}
+.piano .bk.hit{background:var(--accent)}
+.piano .wk.on{box-shadow:inset 0 -6px 0 var(--voice)}
+.pianowrap{overflow-x:auto;padding-bottom:4px}
+/* Flow */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0}
+.flow .node{flex:1 1 140px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0;position:relative}
+.flow .arrow{display:flex;align-items:center;padding:0 6px;color:var(--muted);font-size:1.3rem}
+.node .tag{font:600 .65rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+/* Decision tree */
+.tree{display:flex;flex-direction:column;gap:10px}
+.tree .q{font-size:1.1rem;font-weight:600}
+.trail{display:flex;flex-wrap:wrap;gap:6px}
+.trail span{font-size:.75rem;background:var(--sunk);padding:3px 8px;border-radius:999px;color:var(--muted)}
+/* Tuner */
+.tuner{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:stretch}
+.bignote{font:400 4.4rem/1 var(--display);text-align:center}
+.bignote small{font:500 1rem var(--mono);color:var(--muted);display:block;margin-top:6px}
+canvas.trail{width:100%;height:220px;background:var(--sunk);border-radius:10px;display:block}
+.meter{height:10px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);width:0}
+/* Exercise list */
+.exlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:8px;text-align:left}
+.ex:hover{border-color:var(--accent)}
+.ex[aria-selected="true"]{border-color:var(--voice);box-shadow:0 0 0 2px var(--voice-soft)}
+.ex .meta{display:flex;gap:6px;flex-wrap:wrap}
+.patt{display:flex;gap:3px;align-items:flex-end;height:40px}
+.patt i{flex:1;background:var(--accent);border-radius:2px;opacity:.75;min-width:3px}
+.patt i.cur{background:var(--voice);opacity:1}
+/* Breath pacer */
+.pacer{display:grid;place-items:center;height:260px;position:relative}
+.pacer .orb{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--accent-soft),var(--accent));transition:transform 1s linear;display:grid;place-items:center}
+.pacer .lbl{position:absolute;bottom:6px;font:400 1.6rem var(--display)}
+.pacer .cnt{font:500 1.3rem var(--mono);color:var(--accent-ink)}
+/* Quiz */
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;cursor:pointer;margin:6px 0}
+.opt:hover{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+/* Glossary */
+dl.gloss{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:8px 18px;margin:0}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{margin:0;color:var(--muted)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+.check input{margin-top:5px;accent-color:var(--good)}
+.pnav{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:18px}
+.part{cursor:pointer}
+.part:hover > *{filter:brightness(1.08)}
+.toggle-row{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;color:var(--muted)}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:auto;flex-direction:row;align-items:center;padding:10px 0;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;gap:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+  .brand{padding:0;flex:none}
+  .brand h1{font-size:1.5rem;white-space:nowrap}
+  .brand p,.scope,.toc .grp,.toc a .k,.lvl-dots{display:none}
+  nav.toc{flex-direction:row;gap:4px}
+  .toc a{white-space:nowrap;border-left:0;border-radius:999px;padding:6px 12px;font-size:.85rem}
+  .hero,.tuner{grid-template-columns:1fr}
+  .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  dl.gloss{grid-template-columns:1fr}
+  dl.gloss dd{margin-bottom:8px}
+  .flow{flex-direction:column}
+  .flow .arrow{justify-content:center;transform:rotate(90deg);padding:2px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+<aside class="rail">
+  <div class="brand">
+    <h1>Singer's <em>Atlas</em></h1>
+    <p>Voice, music and singing from first note to advanced technique.</p>
+  </div>
+  <div class="scope" aria-hidden="true"><span>Now sounding</span><canvas id="scope" width="460" height="108"></canvas></div>
+  <nav class="toc" id="toc" aria-label="Chapters"></nav>
+</aside>
+<main id="main">
+
+<!-- ============ START ============ -->
+<section class="chapter" id="start" data-title="Start here" data-group="Begin" data-lvl="1">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">A complete guide, beginner to advanced</div>
+      <h2>Every voice is an <em>instrument</em> you can learn to play.</h2>
+      <p class="lede">Your voice has a power source (breath), a vibrator (vocal folds) and a resonator (throat, mouth and nose). Learning to sing is learning to coordinate those three, then training your ear so the notes land where you mean them to.</p>
+      <div class="row">
+        <button class="btn primary" data-go="anatomy"><span class="play-ico"></span>Start with how the voice works</button>
+        <button class="btn" data-go="in-tune">Jump to the pitch trainer</button>
+        <button class="btn" data-playnote="69">Play A4 · 440 Hz</button>
+      </div>
+    </div>
+    <div class="staffcard">
+      <svg class="diagram" viewBox="0 0 360 230" role="img" aria-label="The voice as an instrument: breath powers the vocal folds, the folds make a buzz, and the vocal tract shapes it into sound">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+        <rect x="10" y="150" width="100" height="62" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <text x="60" y="176" text-anchor="middle" font-weight="700" fill="var(--ink)" font-size="13">POWER</text>
+        <text x="60" y="194" text-anchor="middle" fill="var(--muted)" font-size="11">lungs + diaphragm</text>
+        <rect x="130" y="90" width="100" height="62" rx="10" fill="var(--voice-soft)" stroke="var(--voice)"/>
+        <text x="180" y="116" text-anchor="middle" font-weight="700" fill="var(--ink)" font-size="13">SOURCE</text>
+        <text x="180" y="134" text-anchor="middle" fill="var(--muted)" font-size="11">vocal folds buzz</text>
+        <rect x="250" y="30" width="100" height="62" rx="10" fill="var(--gold-soft)" stroke="var(--gold)"/>
+        <text x="300" y="56" text-anchor="middle" font-weight="700" fill="var(--ink)" font-size="13">FILTER</text>
+        <text x="300" y="74" text-anchor="middle" fill="var(--muted)" font-size="11">throat, mouth, nose</text>
+        <path d="M110,170 C125,170 120,130 128,128" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <path d="M230,110 C245,110 240,70 248,68" fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <path id="heroWave" d="M255,120 Q265,105 275,120 T295,120 T315,120 T335,120" fill="none" stroke="var(--voice)" stroke-width="2"/>
+        <text x="300" y="150" text-anchor="middle" fill="var(--muted)" font-size="11">= your sound</text>
+        <text x="20" y="40" fill="var(--muted)" font-size="11">air pressure</text>
+        <text x="20" y="56" fill="var(--muted)" font-size="11">→ vibration</text>
+        <text x="20" y="72" fill="var(--muted)" font-size="11">→ resonance</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Your learning route</h3>
+    <p class="muted">Three stages. Each one builds the next, so skipping breath and pitch work usually shows up later as strain or tuning trouble. Click a stage to see its milestones.</p>
+    <div class="dwrap">
+    <svg class="diagram" viewBox="0 0 960 230" style="min-width:680px" role="img" aria-label="Roadmap from beginner to intermediate to advanced">
+      <path d="M40,170 C200,170 220,60 380,80 S600,190 720,120 S880,40 930,50" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M40,170 C200,170 220,60 380,80 S600,190 720,120 S880,40 930,50" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+      <g class="part" data-stage="0"><circle cx="70" cy="168" r="30" fill="var(--good)"/><text x="70" y="173" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">BEGIN</text><text x="70" y="220" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="600">Months 0–3</text></g>
+      <g class="part" data-stage="1"><circle cx="470" cy="122" r="30" fill="var(--warn)"/><text x="470" y="127" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">BUILD</text><text x="470" y="178" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="600">Months 3–12</text></g>
+      <g class="part" data-stage="2"><circle cx="900" cy="52" r="30" fill="var(--voice)"/><text x="900" y="57" text-anchor="middle" fill="#fff" font-weight="700" font-size="13">MASTER</text><text x="900" y="108" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="600">Year 1+</text></g>
+      <text x="200" y="98" fill="var(--muted)" font-size="12">posture · breath · match pitch</text>
+      <text x="590" y="186" fill="var(--muted)" font-size="12">registers · mix · resonance · range</text>
+      <text x="700" y="40" fill="var(--muted)" font-size="12">style · agility · belt · artistry</text>
+    </svg>
+    </div>
+    <div class="card" id="stageInfo"></div>
+  </div>
+
+  <div class="block">
+    <h3>How to use this atlas</h3>
+    <div class="grid g3">
+      <div class="card"><h4>Read, then hear it</h4><p class="small muted">Every concept has a button that plays it: notes, intervals, scales, vibrato, vowels, exercise patterns. Use headphones for the pitch trainer so the microphone hears only you.</p></div>
+      <div class="card"><h4>Practise little and often</h4><p class="small muted">Twenty focused minutes a day beats two hours on Sunday. Build a routine in <a href="#routine">Daily routine</a> and log it so you can see progress.</p></div>
+      <div class="card"><h4>Measure your pitch</h4><p class="small muted">The <a href="#in-tune">pitch trainer</a> listens and shows how many cents sharp or flat you are. If the microphone is blocked, upload a recording instead.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Ten rules every good singer follows</h3>
+    <div class="grid g2">
+      <ol class="ticks" style="padding-left:1.4em">
+        <li><b>Warm up first.</b> Gentle trills and hums before songs, every time.</li>
+        <li><b>Breathe low, stand tall.</b> Ribs expand; shoulders stay still.</li>
+        <li><b>Listen before you sing.</b> Hear the note in your head, then sing it.</li>
+        <li><b>Never push through pain.</b> Hoarseness or a scratchy feeling means stop.</li>
+        <li><b>Record yourself.</b> What you hear inside your head is not what others hear.</li>
+      </ol>
+      <ol class="ticks" start="6" style="padding-left:1.4em">
+        <li><b>Hydrate all day.</b> Water you drink now helps your folds hours later.</li>
+        <li><b>Volume is not power.</b> Resonance, not shouting, makes a voice carry.</li>
+        <li><b>Practise slowly.</b> Speed and runs come from accurate slow repetition.</li>
+        <li><b>Sleep and rest.</b> Muscles and tissue repair when you rest.</li>
+        <li><b>Tell the story.</b> Technique serves the meaning of the words.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ANATOMY ============ -->
+<section class="chapter" id="anatomy" data-title="How the voice works" data-group="Understand" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">The instrument</div>
+    <h2>How the voice works</h2>
+    <p class="lede">Singing is controlled air. The lungs push air up, the vocal folds chop it into puffs hundreds of times a second, and the spaces above shape that buzz into vowels and tone. Click any part of the diagram.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <svg class="diagram" id="anatomySvg" viewBox="0 0 360 520" role="img" aria-label="Schematic of the vocal system from diaphragm to lips">
+        <g class="part" data-part="nasal"><path d="M118,42 Q120,22 170,22 L238,30 Q262,36 256,60 L250,80 L132,80 Q116,70 118,42z" fill="color-mix(in srgb,var(--gold) 22%,var(--surface))" stroke="var(--gold)"/><text x="190" y="57" text-anchor="middle" font-size="12" fill="var(--ink)">Nasal cavity</text></g>
+        <g class="part" data-part="mouth"><path d="M150,96 L262,96 Q280,100 280,122 Q280,146 262,150 L150,150z" fill="color-mix(in srgb,var(--gold) 22%,var(--surface))" stroke="var(--gold)"/><text x="205" y="114" text-anchor="middle" font-size="12" fill="var(--ink)">Mouth</text></g>
+        <g class="part" data-part="tongue"><path d="M152,150 Q160,124 205,126 Q248,128 258,148z" fill="color-mix(in srgb,var(--voice) 35%,var(--surface))" stroke="var(--voice)"/><text x="207" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">Tongue</text></g>
+        <g class="part" data-part="lips"><path d="M282,104 Q296,110 292,122 Q296,136 282,142" fill="none" stroke="var(--voice)" stroke-width="7" stroke-linecap="round"/><text x="304" y="126" font-size="11" fill="var(--ink)">Lips</text></g>
+        <g class="part" data-part="softpalate"><path d="M132,80 Q140,92 150,96" fill="none" stroke="var(--c7)" stroke-width="6" stroke-linecap="round"/><text x="60" y="92" font-size="11" fill="var(--ink)">Soft palate</text><line x1="112" y1="89" x2="132" y2="87" stroke="var(--muted)"/></g>
+        <g class="part" data-part="pharynx"><rect x="118" y="80" width="32" height="150" rx="8" fill="color-mix(in srgb,var(--gold) 14%,var(--surface))" stroke="var(--gold)"/><text x="62" y="160" font-size="12" fill="var(--ink)">Pharynx</text><line x1="104" y1="156" x2="118" y2="156" stroke="var(--muted)"/></g>
+        <g class="part" data-part="larynx"><rect x="112" y="228" width="44" height="44" rx="8" fill="var(--voice-soft)" stroke="var(--voice)" stroke-width="2"/><path d="M120,250 L134,244 M148,250 L134,244" stroke="var(--voice)" stroke-width="3" stroke-linecap="round" id="foldLines"/><text x="166" y="246" font-size="12" fill="var(--ink)" font-weight="700">Larynx</text><text x="166" y="262" font-size="11" fill="var(--muted)">vocal folds inside</text></g>
+        <g class="part" data-part="trachea"><rect x="124" y="272" width="20" height="70" fill="color-mix(in srgb,var(--accent) 14%,var(--surface))" stroke="var(--accent)"/><path d="M124,284h20M124,296h20M124,308h20M124,320h20M124,332h20" stroke="var(--accent)" stroke-width=".8"/><text x="152" y="312" font-size="11" fill="var(--ink)">Trachea</text></g>
+        <g class="part" data-part="lungs" id="lungs" style="transform-origin:134px 410px;transition:transform 1.6s ease-in-out">
+          <path d="M124,342 Q100,350 90,360" stroke="var(--accent)" stroke-width="6" fill="none"/><path d="M144,342 Q168,350 178,360" stroke="var(--accent)" stroke-width="6" fill="none"/>
+          <ellipse cx="82" cy="410" rx="52" ry="68" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <ellipse cx="186" cy="410" rx="52" ry="68" fill="var(--accent-soft)" stroke="var(--accent)"/>
+          <text x="134" y="414" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="700">Lungs</text></g>
+        <g class="part" data-part="ribs"><path d="M22,370 Q134,320 246,370 M18,400 Q134,350 250,400 M18,430 Q134,382 250,430" fill="none" stroke="var(--muted)" stroke-dasharray="3 5"/><text x="252" y="368" font-size="11" fill="var(--ink)">Ribs &amp;</text><text x="252" y="382" font-size="11" fill="var(--ink)">intercostals</text></g>
+        <g class="part" data-part="diaphragm"><path id="diaphragm" d="M20,486 Q134,420 248,486" fill="none" stroke="var(--good)" stroke-width="6" stroke-linecap="round" style="transition:d 1.6s ease-in-out"/><text x="134" y="508" text-anchor="middle" font-size="12" fill="var(--ink)" font-weight="700">Diaphragm</text></g>
+        <g class="part" data-part="abs"><path d="M262,440 L262,500" stroke="var(--c5)" stroke-width="6" stroke-linecap="round"/><text x="272" y="470" font-size="11" fill="var(--ink)">Abdominal</text><text x="272" y="484" font-size="11" fill="var(--ink)">muscles</text></g>
+      </svg>
+      <div class="row" style="justify-content:center">
+        <button class="btn" id="breatheBtn">Animate a breath</button>
+        <span class="hint" id="breatheLbl">Inhale: diaphragm drops, lungs fill.</span>
+      </div>
+    </div>
+    <div class="block">
+      <div class="card" id="partInfo" style="min-height:220px"></div>
+      <div class="sunk">
+        <h4>The three systems</h4>
+        <ul class="clean small">
+          <li><span class="swatch" style="background:var(--accent)"></span><b>Power</b> · lungs, diaphragm, ribs, abdominals. Supplies steady air pressure.</li>
+          <li><span class="swatch" style="background:var(--voice)"></span><b>Source</b> · the larynx and vocal folds. Turns airflow into vibration (pitch).</li>
+          <li><span class="swatch" style="background:var(--gold)"></span><b>Filter</b> · pharynx, mouth, nose. Shapes the buzz into vowels and tone colour.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Inside the larynx: the vocal folds</h3>
+    <p>The vocal folds (often called vocal cords) are two small bands of muscle covered in a soft, flexible layer, about 1.25–2.5 cm long. When you breathe they open into a V. When you sing they close, and air pressure makes them vibrate. Higher notes stretch and thin them; lower notes let them shorten and thicken.</p>
+    <div class="grid g2" style="align-items:center">
+      <div class="card">
+        <svg class="diagram" id="foldSvg" viewBox="0 0 240 240" role="img" aria-label="Top-down view of the vocal folds">
+          <ellipse cx="120" cy="120" rx="100" ry="108" fill="color-mix(in srgb,var(--voice) 10%,var(--surface))" stroke="var(--line)"/>
+          <text x="120" y="22" text-anchor="middle" font-size="10" fill="var(--muted)">FRONT (Adam's apple)</text>
+          <text x="120" y="232" text-anchor="middle" font-size="10" fill="var(--muted)">BACK</text>
+          <polygon id="foldL" fill="var(--voice)" opacity=".85"/>
+          <polygon id="foldR" fill="var(--voice)" opacity=".85"/>
+          <circle cx="92" cy="200" r="10" fill="var(--c7)" opacity=".7"/><circle cx="148" cy="200" r="10" fill="var(--c7)" opacity=".7"/>
+          <text x="120" y="120" text-anchor="middle" font-size="10" fill="var(--ink)" id="glottisLbl">glottis</text>
+        </svg>
+      </div>
+      <div class="block">
+        <div class="toggle-row" role="group" aria-label="Fold state">
+          <button class="btn" data-fold="breathe" aria-pressed="true">Breathing (open)</button>
+          <button class="btn" data-fold="sing" aria-pressed="false">Singing (vibrating)</button>
+        </div>
+        <label class="f">Pitch <span class="mono" id="foldHz">220 Hz · A3</span>
+          <input type="range" id="foldPitch" min="45" max="81" value="57"></label>
+        <p class="small muted">The animation is slowed down roughly 50×. At A3 your folds really open and close 220 times every second; at the top of a soprano's range, over 1,000 times.</p>
+        <div class="row"><button class="btn" id="foldPlay"><span class="play-ico"></span>Hear this pitch</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>The journey of one sung note</h3>
+    <div class="flow">
+      <div class="node"><div class="tag" style="color:var(--muted)">Step 1</div><h4>Think it</h4><p class="small muted">Your brain hears the target pitch and sends signals to the laryngeal muscles before any sound starts.</p></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">Step 2 · Power</div><h4>Breathe in</h4><p class="small muted">The diaphragm drops, ribs widen, air fills the lungs without lifting the shoulders.</p></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--voice)">Step 3 · Source</div><h4>Folds close</h4><p class="small muted">Air pressure builds under the closed folds, then sets them vibrating (the onset).</p></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--gold)">Step 4 · Filter</div><h4>Tract shapes it</h4><p class="small muted">Throat, tongue, jaw, lips and soft palate boost some overtones and dampen others.</p></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--good)">Step 5 · Feedback</div><h4>Ear corrects</h4><p class="small muted">You hear yourself and make tiny adjustments. That loop is what pitch training sharpens.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Sound in three numbers</h3>
+    <div class="grid g3">
+      <div class="card"><div class="eyebrow" style="color:var(--accent)">Pitch</div><h4>Frequency (Hz)</h4><p class="small muted">How fast the folds vibrate. A4 is 440 vibrations per second. Doubling the frequency raises the note one octave.</p><div class="row"><button class="btn small" data-playnote="57">A3 220 Hz</button><button class="btn small" data-playnote="69">A4 440 Hz</button><button class="btn small" data-playnote="81">A5 880 Hz</button></div></div>
+      <div class="card"><div class="eyebrow" style="color:var(--voice)">Loudness</div><h4>Amplitude (dB)</h4><p class="small muted">How much air pressure and fold closure you use. Healthy loud singing comes from resonance and efficient closure, not more force.</p><div class="row"><button class="btn small" data-vol="0.06">Soft (p)</button><button class="btn small" data-vol="0.18">Medium (mf)</button><button class="btn small" data-vol="0.4">Loud (f)</button></div></div>
+      <div class="card"><div class="eyebrow" style="color:var(--gold)">Tone colour</div><h4>Timbre (overtones)</h4><p class="small muted">Every note contains overtones above the main pitch. Which ones are strongest decides whether a voice sounds dark, bright, breathy or ringing.</p><div class="row"><button class="btn small" data-timbre="sine">Pure</button><button class="btn small" data-timbre="triangle">Warm</button><button class="btn small" data-timbre="sawtooth">Bright</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MUSIC BASICS ============ -->
+<section class="chapter" id="music" data-title="Music basics" data-group="Understand" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">The language singers read</div>
+    <h2>Music basics for singers</h2>
+    <p class="lede">You do not need to read music fluently to sing well, but knowing notes, intervals, scales and rhythm makes everything faster: learning songs, talking to musicians and practising exercises.</p>
+  </div>
+  <div class="block">
+    <h3>The keyboard is a map of pitch</h3>
+    <p>Twelve notes repeat in every octave: seven white keys (C D E F G A B) and five black keys (sharps ♯ and flats ♭). The step between any two neighbouring keys is a <b>semitone</b>. Two semitones make a <b>whole tone</b>. Middle C is C4. Click any key.</p>
+    <div class="pianowrap"><div class="piano" id="mainPiano"></div></div>
+    <p class="hint" id="pianoReadout">Tip: the number after the letter is the octave. C4 to B4 is one octave; C5 starts the next.</p>
+  </div>
+
+  <div class="block">
+    <h3>Intervals: the distance between two notes</h3>
+    <p>Songs are built from intervals. Learning to recognise them by ear is the single biggest step towards singing in tune. Each one has a famous melody that starts with it, which makes it easy to remember.</p>
+    <div class="tablewrap"><table id="intervalTable"><thead><tr><th>Interval</th><th class="num">Semitones</th><th>Sound / feel</th><th>Melody that starts with it</th><th>Hear it</th></tr></thead><tbody></tbody></table></div>
+  </div>
+
+  <div class="block">
+    <h3>Scales: the ladders melodies climb</h3>
+    <div class="grid g2">
+      <div class="card">
+        <label class="f">Scale
+          <select id="scaleSel"></select></label>
+        <div class="row" style="margin-top:10px"><label class="f">Starting note <select id="scaleRoot"></select></label>
+          <button class="btn primary" id="scalePlay"><span class="play-ico"></span>Play up and down</button></div>
+        <p class="small muted" id="scaleDesc" style="margin-top:10px"></p>
+        <p class="mono small" id="scaleNotes"></p>
+      </div>
+      <div class="card">
+        <h4>Solfège: singing names for notes</h4>
+        <p class="small muted">Many choirs and teachers use Do–Re–Mi so the same syllable always means the same scale step, whatever key you are in.</p>
+        <div class="row" id="solfegeRow"></div>
+        <p class="small muted" style="margin-top:8px">Numbers mean the same thing: an exercise written 1-3-5-3-1 means Do-Mi-Sol-Mi-Do.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Rhythm and tempo</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Note values</h4>
+        <div class="tablewrap"><table><thead><tr><th>Name (US / UK)</th><th class="num">Beats in 4/4</th></tr></thead><tbody>
+          <tr><td>Whole / semibreve</td><td class="num">4</td></tr>
+          <tr><td>Half / minim</td><td class="num">2</td></tr>
+          <tr><td>Quarter / crotchet</td><td class="num">1</td></tr>
+          <tr><td>Eighth / quaver</td><td class="num">½</td></tr>
+          <tr><td>Sixteenth / semiquaver</td><td class="num">¼</td></tr>
+        </tbody></table></div>
+        <p class="small muted" style="margin-top:8px">A <b>time signature</b> like 4/4 means four beats in each bar, each beat a quarter note. 3/4 is a waltz feel; 6/8 is a lilting two-pulse feel.</p>
+      </div>
+      <div class="card">
+        <h4>Metronome</h4>
+        <div class="row"><span class="bignote" id="bpmShow" style="font-size:3rem">80</span><span class="muted">BPM</span></div>
+        <input type="range" id="bpm" min="40" max="200" value="80" style="width:100%">
+        <div class="row" style="margin-top:8px">
+          <label class="f">Beats per bar <select id="beats"><option>2</option><option>3</option><option selected>4</option><option>6</option></select></label>
+          <button class="btn primary" id="metroBtn"><span class="play-ico"></span>Start</button>
+        </div>
+        <div class="row" id="metroDots" style="margin-top:10px"></div>
+        <p class="small muted">Tempo words: Largo ≈ 50 · Andante ≈ 76 · Moderato ≈ 108 · Allegro ≈ 132 · Presto ≈ 170+</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Dynamics and expression marks</h3>
+    <div class="tablewrap"><table><thead><tr><th>Mark</th><th>Italian</th><th>Meaning</th><th>How a singer does it</th></tr></thead><tbody>
+      <tr><td class="mono">pp</td><td>pianissimo</td><td>very soft</td><td>Keep breath flowing and the tone focused; soft is not breathy.</td></tr>
+      <tr><td class="mono">p</td><td>piano</td><td>soft</td><td>Less pressure, same support, same vowel shape.</td></tr>
+      <tr><td class="mono">mf</td><td>mezzo forte</td><td>medium loud</td><td>Your natural speaking-level energy.</td></tr>
+      <tr><td class="mono">f / ff</td><td>forte / fortissimo</td><td>loud / very loud</td><td>More resonance and closure; open the throat, do not squeeze it.</td></tr>
+      <tr><td class="mono">&lt; &gt;</td><td>crescendo / decrescendo</td><td>getting louder / softer</td><td>Practise with <i>messa di voce</i> (see Exercises).</td></tr>
+      <tr><td class="mono">legato</td><td>legato</td><td>smooth, connected</td><td>No gaps between notes; breath keeps moving through consonants.</td></tr>
+      <tr><td class="mono">staccato</td><td>staccato</td><td>short, detached</td><td>Light bounces from the belly, clean onsets, no glottal clicks.</td></tr>
+      <tr><td class="mono">fermata 𝄐</td><td>fermata</td><td>hold longer</td><td>Plan the breath before the held note.</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="block">
+    <h3>Keys, chords and harmony in one minute</h3>
+    <div class="grid g3">
+      <div class="card"><h4>Key</h4><p class="small muted">The home note a song settles on. Changing the key moves the whole song up or down, which is how singers fit a song to their range.</p></div>
+      <div class="card"><h4>Chord</h4><p class="small muted">Three or more notes at once. A major triad (1-3-5) sounds bright; a minor triad (1-♭3-5) sounds darker.</p><div class="row"><button class="btn small" data-chord="0,4,7">Major</button><button class="btn small" data-chord="0,3,7">Minor</button><button class="btn small" data-chord="0,4,7,10">Dominant 7</button></div></div>
+      <div class="card"><h4>Harmony</h4><p class="small muted">Singing a different note that fits the chord. Thirds above the melody are the most common backing-vocal harmony.</p><div class="row"><button class="btn small" id="harmDemo">Melody, then with a 3rd above</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VOICE TYPES ============ -->
+<section class="chapter" id="voice-types" data-title="Voice types" data-group="Understand" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">Classification</div>
+    <h2>Voice types, female and male</h2>
+    <p class="lede">Voice type is decided by more than range. Teachers also listen to where your voice feels most comfortable (tessitura), where it changes gear (passaggio) and its natural colour (timbre). Classifying too early can push you into the wrong repertoire, so treat this as a starting point.</p>
+  </div>
+  <div class="block">
+    <h3>Range map</h3>
+    <div class="legend" id="vtLegend"></div>
+    <div class="dwrap"><svg class="diagram" id="rangeMap" viewBox="0 0 980 380" style="min-width:720px" role="img" aria-label="Typical ranges of the seven main voice types on a keyboard"></svg></div>
+    <p class="hint">Solid bar: typical range. Lighter ends: notes trained singers often reach. Ticks: approximate passaggi (register shifts). Click a bar to hear its range or read the type below.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card" id="vtInfo"></div>
+    <div class="card">
+      <h4>Find your likely voice type</h4>
+      <p class="small muted">Use notes you can sing comfortably and clearly, not the extremes you can just squeak or growl. Not sure of the names? Use the piano in Music basics or the pitch trainer, which remembers your lowest and highest sung notes.</p>
+      <div class="row">
+        <label class="f">Lowest comfortable note <select id="vfLow"></select></label>
+        <label class="f">Highest comfortable note <select id="vfHigh"></select></label>
+      </div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="vfGo">Suggest my type</button><button class="btn" id="vfMic">Use my trainer range</button></div>
+      <div id="vfOut" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="block">
+    <h3>Subtypes (the Fach system)</h3>
+    <p class="muted">Classical singing splits each type by weight and agility. Pop and contemporary styles rarely use these labels, but they explain why two sopranos can sound so different.</p>
+    <div class="tablewrap"><table><thead><tr><th>Subtype</th><th>Character</th><th>Typical repertoire</th></tr></thead><tbody>
+      <tr><td><b>Coloratura soprano</b></td><td>Very high, light, agile; fast runs and trills</td><td>Queen of the Night (Mozart), Lakmé</td></tr>
+      <tr><td><b>Lyric soprano</b></td><td>Warm, sweet, flowing</td><td>Mimì (La Bohème), Pamina</td></tr>
+      <tr><td><b>Dramatic soprano</b></td><td>Large, powerful, cuts over big orchestras</td><td>Wagner and Puccini heroines (Tosca, Turandot)</td></tr>
+      <tr><td><b>Lyric / dramatic mezzo</b></td><td>Rich middle, darker colour</td><td>Carmen, Rosina, trouser roles</td></tr>
+      <tr><td><b>Contralto</b></td><td>Deepest female voice, dark and heavy</td><td>Erda (Wagner), oratorio solos</td></tr>
+      <tr><td><b>Countertenor</b></td><td>Male voice singing in alto/mezzo range, mostly in a developed falsetto/head voice</td><td>Baroque opera, Handel, early music</td></tr>
+      <tr><td><b>Leggero / lyric tenor</b></td><td>Light, bright, easy high notes</td><td>Rossini and Mozart tenor roles</td></tr>
+      <tr><td><b>Spinto / dramatic tenor (Heldentenor)</b></td><td>Heavier, ringing, heroic</td><td>Radamès, Siegfried</td></tr>
+      <tr><td><b>Lyric / dramatic baritone</b></td><td>Warm middle male voice</td><td>Figaro, Rigoletto</td></tr>
+      <tr><td><b>Bass-baritone</b></td><td>Bass depth with baritone top</td><td>Wotan, Don Giovanni</td></tr>
+      <tr><td><b>Basso profondo</b></td><td>Deepest male voice</td><td>Sarastro, Russian Orthodox choral octavists</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="grid g2">
+    <div class="callout"><b>Range versus tessitura.</b> Range is every note you can produce. Tessitura is where your voice sits comfortably for long stretches. A song that keeps returning to the top of your range will tire you even if you can hit every note. Choose keys by tessitura.</div>
+    <div class="callout"><b>Voices change.</b> Male voices drop roughly an octave during puberty and settle by the early twenties. Female voices change too (lower slightly after puberty and again after menopause). Training also extends range at both ends.</div>
+  </div>
+</section>
+
+<!-- ============ IN TUNE ============ -->
+<section class="chapter" id="in-tune" data-title="Singing in tune" data-group="Train" data-lvl="2" hidden>
+  <div>
+    <div class="eyebrow">Pitch accuracy</div>
+    <h2>How to sing in tune</h2>
+    <p class="lede">Singing in tune is a skill, not a gift. Fewer than 2% of people have true tone deafness (amusia). Most off-pitch singing comes from not hearing the note clearly first, tension, or weak breath support, and all three can be trained.</p>
+  </div>
+
+  <div class="block">
+    <h3>Pitch trainer</h3>
+    <p class="muted small">Pick a target, press <b>Listen</b>, play the reference, then sing it on an "ah" or "oo". The needle shows how many cents you are off (100 cents = 1 semitone). Within ±10 cents sounds in tune to most listeners; within ±25 cents is a good start.</p>
+    <div class="card">
+      <div class="tuner">
+        <div class="block" style="gap:10px">
+          <div class="bignote" id="tNote">–<small id="tHz">sing a note</small></div>
+          <svg viewBox="0 0 220 120" class="diagram" aria-label="Cents meter">
+            <path d="M20,110 A90,90 0 0 1 200,110" fill="none" stroke="var(--sunk)" stroke-width="16"/>
+            <path d="M89,23.5 A90,90 0 0 1 131,23.5" fill="none" stroke="color-mix(in srgb,var(--good) 55%,transparent)" stroke-width="16"/>
+            <text x="20" y="118" font-size="9" fill="var(--muted)" text-anchor="middle">−50</text><text x="110" y="14" font-size="9" fill="var(--muted)" text-anchor="middle">0</text><text x="200" y="118" font-size="9" fill="var(--muted)" text-anchor="middle">+50</text>
+            <line id="needle" x1="110" y1="110" x2="110" y2="32" stroke="var(--voice)" stroke-width="3" stroke-linecap="round" style="transform-origin:110px 110px;transition:transform .12s"/>
+            <circle cx="110" cy="110" r="6" fill="var(--ink)"/>
+          </svg>
+          <div class="row" style="justify-content:center"><span class="mono small" id="tCents">± 0 cents</span><span class="pill" id="tVerdict">waiting</span></div>
+        </div>
+        <div class="block" style="gap:10px;min-width:0">
+          <div class="row">
+            <label class="f">Target note <select id="tTarget"></select></label>
+            <button class="btn" id="tRef"><span class="play-ico"></span>Play target</button>
+            <button class="btn rec" id="tMic">● Listen</button>
+            <button class="btn" id="tRandom">Random target</button>
+          </div>
+          <canvas class="trail" id="tTrail" width="900" height="300"></canvas>
+          <div class="row small"><span class="muted">Hold within ±15 cents</span><div class="meter" style="flex:1;min-width:120px"><i id="tHold"></i></div><span class="mono" id="tScore">Score 0</span></div>
+          <p class="hint" id="tStatus">The microphone is used only in your browser. Nothing is recorded or sent anywhere.</p>
+          <div class="sunk small">
+            <b>No microphone here?</b> Upload a short recording of yourself singing (phone voice memo, up to 30 seconds) and the atlas will draw your pitch line and score your tuning.
+            <div class="row" style="margin-top:8px"><input type="file" id="tFile" accept="audio/*"><span id="tFileOut" class="muted"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Why am I off pitch? A diagnosis flowchart</h3>
+    <p class="muted">Answer honestly. Each path ends with the exercises that fix that cause.</p>
+    <div class="card tree" id="pitchTree"></div>
+  </div>
+
+  <div class="block">
+    <h3>Ear training</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>Higher, lower or same?</h4>
+        <p class="small muted">Beginner. Two notes play. Which way did the second one go?</p>
+        <div class="row"><button class="btn primary" id="hlPlay"><span class="play-ico"></span>Play pair</button><button class="btn" data-hl="higher">Higher</button><button class="btn" data-hl="lower">Lower</button><button class="btn" data-hl="same">Same</button></div>
+        <p class="small" id="hlOut" style="margin-top:8px">Score: 0 / 0</p>
+      </div>
+      <div class="card">
+        <h4>Name that interval</h4>
+        <p class="small muted">Intermediate to advanced. Use the melody hints from Music basics.</p>
+        <div class="row"><button class="btn primary" id="ivPlay"><span class="play-ico"></span>Play interval</button><button class="btn" id="ivRepeat">Repeat</button>
+          <label class="f">Level <select id="ivLevel"><option value="1">Easy (3rd, 5th, octave)</option><option value="2" selected>Medium (2nd–octave)</option><option value="3">Hard (all 12)</option></select></label></div>
+        <div class="row" id="ivOpts" style="margin-top:8px"></div>
+        <p class="small" id="ivOut" style="margin-top:8px">Score: 0 / 0</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>The in-tune habit loop</h3>
+    <div class="flow">
+      <div class="node"><div class="tag" style="color:var(--accent)">Audiate</div><p class="small">Hear the note in your head before you open your mouth.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">Prepare</div><p class="small">Low breath, relaxed jaw, vowel shape ready.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--voice)">Onset</div><p class="small">Start the note cleanly, right in the centre. No scooping up to it.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--gold)">Sustain</div><p class="small">Keep breath steady. Pitch sags when support drops at phrase ends.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--good)">Check</div><p class="small">Record, compare to the reference, adjust. Repeat.</p></div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><h4>Common pattern: going flat</h4><p class="small muted">Usually low energy, a heavy or dark vowel, or tiredness. Fix: brighter vowel, keep the soft palate lifted, think "up" as melodies descend, support through the end of the phrase.</p></div>
+      <div class="card"><h4>Common pattern: going sharp</h4><p class="small muted">Usually excitement, too much air pressure or tension on high notes. Fix: less push, more space, steady airflow, release the jaw and tongue.</p></div>
+      <div class="card"><h4>Common pattern: scooping</h4><p class="small muted">Sliding up into every note from below. Fix: audiate first, aim for the top of the note, practise staccato onsets on single pitches.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BREATH & POSTURE ============ -->
+<section class="chapter" id="breath" data-title="Breath & posture" data-group="Train" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">Foundation</div>
+    <h2>Posture and breathing</h2>
+    <p class="lede">A balanced body lets the breath move freely and keeps the larynx unblocked. Breath "support" means controlling how fast air leaves, so the folds get steady pressure, not a blast or a trickle.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card">
+      <svg class="diagram" viewBox="0 0 300 470" role="img" aria-label="Singer posture alignment from head to feet">
+        <line x1="150" y1="10" x2="150" y2="460" stroke="var(--accent)" stroke-dasharray="4 6"/>
+        <circle cx="150" cy="58" r="34" fill="var(--sunk)" stroke="var(--ink)" stroke-width="2"/>
+        <path d="M140,92 L140,108 L160,108 L160,92" fill="var(--sunk)" stroke="var(--ink)" stroke-width="2"/>
+        <path d="M96,118 Q150,104 204,118 L196,250 Q150,262 104,250z" fill="var(--sunk)" stroke="var(--ink)" stroke-width="2"/>
+        <path d="M96,118 L78,240 M204,118 L222,240" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/>
+        <path d="M110,250 L118,370 L112,446 M190,250 L182,370 L188,446" stroke="var(--ink)" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <path d="M96,452 L128,452 M172,452 L204,452" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>
+        <g font-size="12" fill="var(--ink)">
+          <g data-pose="0" class="part"><circle cx="232" cy="58" r="11" fill="var(--voice)"/><text x="232" y="62" text-anchor="middle" fill="#fff" font-weight="700">1</text></g>
+          <g data-pose="1" class="part"><circle cx="232" cy="118" r="11" fill="var(--voice)"/><text x="232" y="122" text-anchor="middle" fill="#fff" font-weight="700">2</text></g>
+          <g data-pose="2" class="part"><circle cx="232" cy="180" r="11" fill="var(--voice)"/><text x="232" y="184" text-anchor="middle" fill="#fff" font-weight="700">3</text></g>
+          <g data-pose="3" class="part"><circle cx="232" cy="250" r="11" fill="var(--voice)"/><text x="232" y="254" text-anchor="middle" fill="#fff" font-weight="700">4</text></g>
+          <g data-pose="4" class="part"><circle cx="232" cy="370" r="11" fill="var(--voice)"/><text x="232" y="374" text-anchor="middle" fill="#fff" font-weight="700">5</text></g>
+          <g data-pose="5" class="part"><circle cx="232" cy="446" r="11" fill="var(--voice)"/><text x="232" y="450" text-anchor="middle" fill="#fff" font-weight="700">6</text></g>
+        </g>
+        <text x="20" y="30" font-size="11" fill="var(--muted)">ear · shoulder · hip</text>
+        <text x="20" y="44" font-size="11" fill="var(--muted)">· ankle in one line</text>
+      </svg>
+    </div>
+    <div class="block">
+      <h3>Six-point posture check, head to feet</h3>
+      <div id="poseList" class="block" style="gap:8px"></div>
+      <div class="sunk small"><b>Sitting to sing?</b> Sit towards the front of the chair, both feet flat, spine tall as if standing from the waist up. Never slump against the backrest.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Three ways people breathe</h3>
+    <div class="grid g3">
+      <div class="card"><span class="pill a">Avoid</span><h4 style="margin-top:8px">Clavicular (high chest)</h4><p class="small muted">Shoulders and collarbones lift. Shallow, tense, and it squeezes the neck muscles around the larynx.</p></div>
+      <div class="card"><span class="pill i">Partial</span><h4 style="margin-top:8px">Chest only</h4><p class="small muted">Upper ribs move but the belly is held in. Better, but you run out of air quickly.</p></div>
+      <div class="card"><span class="pill b">Aim for</span><h4 style="margin-top:8px">Low, rib-and-belly (costal-diaphragmatic)</h4><p class="small muted">Belly, sides and back expand all around the waist. Shoulders stay still. Gives the most air and control.</p></div>
+    </div>
+    <div class="callout"><b>Quick test:</b> Put one hand on your upper chest and one on your belly, then sniff in slowly. The lower hand should move first and most. Lie on your back with a book on your stomach if you need to feel it.</div>
+  </div>
+
+  <div class="block">
+    <h3>Breathing pacer</h3>
+    <div class="grid g2" style="align-items:center">
+      <div class="card">
+        <div class="pacer"><div class="orb" id="orb"><span class="cnt" id="orbCnt"></span></div><div class="lbl" id="orbLbl">Ready</div></div>
+      </div>
+      <div class="block">
+        <label class="f">Pattern <select id="breathPat">
+          <option value="4,0,4,0">Calm 4-4 (beginner): in 4, out 4</option>
+          <option value="4,4,8,0" selected>Support builder: in 4, hold 4, hiss out 8</option>
+          <option value="4,4,4,4">Box breathing: 4-4-4-4 (pre-performance nerves)</option>
+          <option value="4,0,12,0">Long hiss: in 4, steady "sss" 12</option>
+          <option value="2,0,20,0">Advanced: snatch breath 2, sustain 20</option>
+        </select></label>
+        <label class="f">Rounds <input type="number" id="breathRounds" value="5" min="1" max="20" style="width:90px"></label>
+        <div class="row"><button class="btn primary" id="breathGo"><span class="play-ico"></span>Start</button><button class="btn" id="breathStop">Stop</button></div>
+        <p class="small muted">On the exhale, hiss on "sss" at an even volume. If the hiss gets louder or weaker, your support is wobbling. Over weeks, increase the exhale count while keeping it even.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Appoggio: the support balance</h3>
+    <p>Classical teachers call it <i>appoggio</i> ("leaning"). After inhaling, the muscles that breathe in (diaphragm, outer intercostals) keep gently resisting while the muscles that breathe out (abdominals, inner intercostals) slowly push. The ribs stay wide for as long as possible. The result is steady, controllable air pressure.</p>
+    <div class="flow">
+      <div class="node"><h4>Too little support</h4><p class="small muted">Breathy tone, flat pitch, phrases die away.</p></div>
+      <div class="arrow">⇄</div>
+      <div class="node" style="border-color:var(--good)"><h4 style="color:var(--good)">Balanced</h4><p class="small muted">Steady tone, free throat, ribs stay open, belly moves in slowly.</p></div>
+      <div class="arrow">⇄</div>
+      <div class="node"><h4>Too much push</h4><p class="small muted">Pressed, loud, sharp; neck veins out; hoarse afterwards.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REGISTERS ============ -->
+<section class="chapter" id="registers" data-title="Registers & resonance" data-group="Train" data-lvl="2" hidden>
+  <div>
+    <div class="eyebrow">Gears of the voice</div>
+    <h2>Registers and resonance</h2>
+    <p class="lede">A register is a range of notes made with the same vocal fold setting. Like gears on a bike, each one works best in its zone. Good technique smooths the changes so the listener hears one voice from bottom to top.</p>
+  </div>
+  <div class="block">
+    <div class="tablewrap"><table><thead><tr><th>Register</th><th>Fold setting</th><th>Feels like</th><th>Used for</th></tr></thead><tbody>
+      <tr><td><span class="swatch" style="background:var(--c2)"></span><b>Vocal fry</b></td><td>Very slack, loosely closed, irregular</td><td>A creaky "door hinge" rattle</td><td>Effects, song endings, very low notes; also a gentle warm-up</td></tr>
+      <tr><td><span class="swatch" style="background:var(--c1)"></span><b>Chest voice</b> (modal, M1)</td><td>Thick, short, firmly closed</td><td>Buzz in chest and mouth; like speaking</td><td>Low and middle notes, belting, most pop verses</td></tr>
+      <tr><td><span class="swatch" style="background:var(--c4)"></span><b>Mixed voice</b></td><td>A blend: thinner folds with good closure</td><td>Forward, ringing, easy</td><td>Smooth bridge through the passaggio; strong high notes without strain</td></tr>
+      <tr><td><span class="swatch" style="background:var(--c6)"></span><b>Head voice</b> (M2)</td><td>Thin, stretched, closed</td><td>Light, buzz behind the eyes/head</td><td>High notes, classical upper range, soft high phrases</td></tr>
+      <tr><td><span class="swatch" style="background:var(--c5)"></span><b>Falsetto</b></td><td>Thin edges only, incomplete closure</td><td>Airy, flute-like, effortless</td><td>Soft high effects, R&amp;B, falsetto choruses (mostly male voices)</td></tr>
+      <tr><td><span class="swatch" style="background:var(--c7)"></span><b>Whistle</b> (M3)</td><td>Very short vibrating segment</td><td>A tiny, piercing whistle</td><td>Extreme high notes above about C6</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="block">
+    <h3>The break and how to bridge it</h3>
+    <p>The <b>passaggio</b> is where one register hands over to the next. Untrained voices "crack" or "flip" here because chest voice is carried up too heavily, then suddenly lets go. The fix is to start thinning the folds and narrowing the vowel <i>before</i> the break.</p>
+    <div class="dwrap"><svg class="diagram" id="bridgeSvg" viewBox="0 0 900 220" style="min-width:640px" role="img" aria-label="Untrained versus trained voice crossing the passaggio"></svg></div>
+    <div class="grid g3">
+      <div class="card"><h4>1 · Lighten</h4><p class="small muted">Approaching the break, use less weight and volume. Think "lift off", not "push up".</p></div>
+      <div class="card"><h4>2 · Narrow the vowel</h4><p class="small muted">"Ah" turns slightly towards "uh", "ay" towards "eh", "ee" towards "ih". This is vowel modification.</p></div>
+      <div class="card"><h4>3 · Use semi-occluded sounds</h4><p class="small muted">Lip trills, "ng", straw phonation and "gee" sirens through the break train the coordination with less strain.</p></div>
+    </div>
+  </div>
+  <div class="block">
+    <h3>Resonance: hear how the mouth shapes a vowel</h3>
+    <p>Your folds make the same buzz for every vowel. The shape of your tongue, jaw and lips creates resonant peaks called <b>formants</b> that turn the buzz into "ee", "ah" or "oo". Press a vowel below: the same synthetic buzz is passed through different formant filters.</p>
+    <div class="card">
+      <div class="row" id="vowelBtns"></div>
+      <div class="dwrap" style="margin-top:12px"><svg class="diagram" id="formantSvg" viewBox="0 0 700 180" style="min-width:520px" role="img" aria-label="Formant peaks of the selected vowel"></svg></div>
+      <p class="small muted">F1 rises as the jaw opens ("ah" highest). F2 rises as the tongue moves forward ("ee" highest). Trained singers also develop the <b>singer's formant</b>, a cluster near 2,500–3,500 Hz that lets an unamplified voice ring over an orchestra.</p>
+    </div>
+  </div>
+  <div class="block">
+    <h3>Placement and resonance spaces</h3>
+    <div class="grid g4">
+      <div class="card"><h4>Chest resonance</h4><p class="small muted">Felt as vibration in the sternum. Adds warmth and depth on lower notes.</p></div>
+      <div class="card"><h4>Mask (forward) resonance</h4><p class="small muted">Buzz around the nose, cheeks and lips. Adds brightness and carry. Hum "mm" to feel it.</p></div>
+      <div class="card"><h4>Pharyngeal space</h4><p class="small muted">An open throat, like the start of a yawn. Adds roundness and depth.</p></div>
+      <div class="card"><h4>Nasal resonance</h4><p class="small muted">A lowered soft palate sends sound through the nose. Useful for "m", "n", "ng"; too much on vowels sounds whiny.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECHNIQUES ============ -->
+<section class="chapter" id="techniques" data-title="Techniques & styles" data-group="Train" data-lvl="3" hidden>
+  <div>
+    <div class="eyebrow">Toolbox</div>
+    <h2>Techniques and styles</h2>
+    <p class="lede">Once breath, pitch and registers are stable, these techniques add colour, power and personality. Filter by level to see what to learn next.</p>
+  </div>
+  <div class="row" role="group" aria-label="Filter by level"><button class="btn" data-tlvl="all" aria-pressed="true">All</button><button class="btn" data-tlvl="Beginner" aria-pressed="false">Beginner</button><button class="btn" data-tlvl="Intermediate" aria-pressed="false">Intermediate</button><button class="btn" data-tlvl="Advanced" aria-pressed="false">Advanced</button></div>
+  <div class="grid g2" id="techGrid"></div>
+
+  <div class="block">
+    <h3>Three ways to start a note (onsets)</h3>
+    <div class="dwrap"><svg class="diagram" viewBox="0 0 900 190" style="min-width:640px" role="img" aria-label="Breathy, balanced and glottal onset shapes">
+      <g transform="translate(20,20)"><text x="120" y="0" text-anchor="middle" font-weight="700" fill="var(--ink)">Breathy (aspirate)</text><text x="120" y="16" text-anchor="middle" font-size="11" fill="var(--muted)">air first, then tone: "h-ah"</text>
+        <path d="M0,100 L60,100" stroke="var(--line)" stroke-width="2" stroke-dasharray="3 4"/><path d="M60,100 Q90,80 110,100 T150,100 T190,100 T240,100" fill="none" stroke="var(--c5)" stroke-width="2"/><path d="M60,100 C90,96 100,60 240,60" fill="none" stroke="var(--muted)" stroke-dasharray="2 3"/></g>
+      <g transform="translate(320,20)"><text x="120" y="0" text-anchor="middle" font-weight="700" fill="var(--good)">Balanced (simultaneous)</text><text x="120" y="16" text-anchor="middle" font-size="11" fill="var(--muted)">air and closure together: clean "ah"</text>
+        <path d="M20,100 Q30,40 45,100 T70,100 T95,100 T120,100 T145,100 T170,100 T195,100 T220,100" fill="none" stroke="var(--good)" stroke-width="2.5"/><path d="M20,60 L220,60" stroke="var(--muted)" stroke-dasharray="2 3"/></g>
+      <g transform="translate(620,20)"><text x="120" y="0" text-anchor="middle" font-weight="700" fill="var(--ink)">Glottal (hard)</text><text x="120" y="16" text-anchor="middle" font-size="11" fill="var(--muted)">folds slam shut first: "'ah"</text>
+        <path d="M20,100 L30,30 L35,160 L40,100 Q55,60 70,100 T100,100 T130,100 T160,100 T190,100 T220,100" fill="none" stroke="var(--bad)" stroke-width="2"/></g>
+      <text x="450" y="182" text-anchor="middle" font-size="12" fill="var(--muted)">Use balanced onsets by default. Breathy and gentle glottal onsets are style choices, used sparingly.</text>
+    </svg></div>
+  </div>
+
+  <div class="block">
+    <h3>Hear the difference: vibrato</h3>
+    <p>Natural vibrato is a regular pitch wave of about 5–7 cycles per second, roughly a quarter to half a semitone wide. It appears on its own when breath and throat are free. A slow, wide wobble or a fast, nervous bleat both signal a problem.</p>
+    <div class="row">
+      <button class="btn" data-vib="0,0">Straight tone</button>
+      <button class="btn primary" data-vib="5.5,35">Healthy vibrato (5.5/s, ±35¢)</button>
+      <button class="btn" data-vib="3.5,110">Wobble (slow, wide)</button>
+      <button class="btn" data-vib="8.5,20">Bleat (fast, tight)</button>
+      <button class="btn" data-vib="delayed">Straight → vibrato (pop style)</button>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Style guide: what changes between genres</h3>
+    <div class="tablewrap"><table><thead><tr><th>Style</th><th>Tone and register</th><th>Vibrato</th><th>Signature techniques</th><th>Listen to</th></tr></thead><tbody id="styleBody"></tbody></table></div>
+    <p class="hint">Example artists are well-known reference points for each style.</p>
+  </div>
+</section>
+
+<!-- ============ EXERCISES ============ -->
+<section class="chapter" id="exercises" data-title="Exercise library" data-group="Practise" data-lvl="2" hidden>
+  <div>
+    <div class="eyebrow">Guided audio</div>
+    <h2>Exercise library</h2>
+    <p class="lede">Pick an exercise, choose a starting note that suits your voice, and press play. The piano plays a short cue chord, then the pattern, then moves up a semitone each repetition, the way a teacher at the piano would.</p>
+  </div>
+  <div class="card">
+    <div class="row">
+      <label class="f">Level <select id="exLevel"><option value="all">All levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>
+      <label class="f">Goal <select id="exGoal"><option value="all">All goals</option></select></label>
+      <label class="f">My voice <select id="exVoice">
+        <option value="57">Soprano (start A3)</option><option value="55">Mezzo / alto (start G3)</option><option value="52">Contralto (start E3)</option>
+        <option value="48">Tenor (start C3)</option><option value="45" selected>Baritone (start A2)</option><option value="41">Bass (start F2)</option></select></label>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start" id="exLayout">
+    <div class="exlist" id="exList" style="grid-template-columns:1fr"></div>
+    <div class="card block" id="exDetail" style="position:sticky;top:20px"></div>
+  </div>
+</section>
+
+<!-- ============ ROUTINE ============ -->
+<section class="chapter" id="routine" data-title="Daily routine & progress" data-group="Practise" data-lvl="2" hidden>
+  <div>
+    <div class="eyebrow">Practice plan</div>
+    <h2>Daily routine and progress</h2>
+    <p class="lede">A good session follows the same arc every day: body, breath, gentle sound, range work, then songs, then a cool-down. Pick a length and run it with the timer.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card block">
+      <div class="row" role="group" aria-label="Routine length"><button class="btn" data-rlen="10" aria-pressed="false">10 min</button><button class="btn" data-rlen="20" aria-pressed="true">20 min</button><button class="btn" data-rlen="40" aria-pressed="false">40 min</button></div>
+      <div id="routineList" class="block" style="gap:8px"></div>
+    </div>
+    <div class="card block">
+      <div class="eyebrow">Session timer</div>
+      <div class="bignote" id="rtClock" style="font-size:3.6rem">00:00</div>
+      <h4 id="rtStep" style="text-align:center">Press start</h4>
+      <p class="small muted" id="rtHow" style="text-align:center;margin-inline:auto"></p>
+      <div class="meter"><i id="rtBar"></i></div>
+      <div class="row" style="justify-content:center"><button class="btn primary" id="rtGo"><span class="play-ico"></span>Start</button><button class="btn" id="rtSkip">Next step</button><button class="btn" id="rtStop">Stop</button></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Session arc</h3>
+    <div class="dwrap"><svg class="diagram" viewBox="0 0 900 200" style="min-width:640px" role="img" aria-label="Vocal effort rises through a session and falls during cool-down">
+      <path d="M40,170 L40,30 M40,170 L870,170" stroke="var(--line)"/>
+      <text x="20" y="100" font-size="11" fill="var(--muted)" transform="rotate(-90 20 100)" text-anchor="middle">vocal effort</text>
+      <path d="M40,160 C120,158 140,140 200,130 S300,110 340,100 S460,70 520,55 S640,40 700,60 S800,150 870,158" fill="none" stroke="var(--voice)" stroke-width="3"/>
+      <g font-size="12" fill="var(--ink)" text-anchor="middle"><text x="110" y="190">Body &amp; breath</text><text x="270" y="190">SOVT warm-up</text><text x="430" y="190">Range &amp; agility</text><text x="610" y="190">Songs</text><text x="800" y="190">Cool-down</text></g>
+    </svg></div>
+  </div>
+
+  <div class="block">
+    <h3>Practice log</h3>
+    <div class="card block">
+      <form class="row" id="logForm">
+        <label class="f">Date <input type="date" id="logDate"></label>
+        <label class="f">Minutes <input type="number" id="logMin" min="1" max="300" value="20" style="width:90px"></label>
+        <label class="f">Focus <select id="logFocus"><option>Warm-up</option><option>Breath</option><option>Pitch</option><option>Range</option><option>Agility</option><option>Repertoire</option><option>Performance</option></select></label>
+        <label class="f" style="flex:1;min-width:160px">Note <input type="text" id="logNote" placeholder="e.g. Bridged E4 on 'gee' without cracking"></label>
+        <button class="btn primary" type="submit">Log session</button>
+      </form>
+      <div class="dwrap"><svg class="diagram" id="logChart" viewBox="0 0 700 170" style="min-width:480px" role="img" aria-label="Minutes practised over the last 14 days"></svg></div>
+      <div class="row small"><span id="logStats" class="muted"></span></div>
+      <div class="tablewrap"><table><thead><tr><th>Date</th><th class="num">Minutes</th><th>Focus</th><th>Note</th><th></th></tr></thead><tbody id="logBody"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>Twelve-week plan</h3>
+    <div class="grid g4" id="weekPlan"></div>
+  </div>
+
+  <div class="block">
+    <h3>Self-assessment: can you do this yet?</h3>
+    <p class="muted small">Tick what you can do reliably on a normal day. Saved in this browser.</p>
+    <div class="grid g3" id="skillChecks"></div>
+  </div>
+</section>
+
+<!-- ============ HEALTH ============ -->
+<section class="chapter" id="health" data-title="Vocal health" data-group="Care" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">Maintenance</div>
+    <h2>Keeping your voice healthy</h2>
+    <p class="lede">Vocal folds are living tissue that collide hundreds of times a second. They need water, rest and gentle use, like any athlete's muscles. Most voice problems come from overuse, dehydration and poor technique, and most are preventable.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h4 style="color:var(--good)">Do</h4><ul class="ticks small">
+      <li>Drink water steadily through the day (pale urine is a good sign).</li>
+      <li>Steam with plain hot water or a personal steamer for 10 minutes when dry or tired.</li>
+      <li>Warm up before singing and cool down after (gentle hums and sirens downwards).</li>
+      <li>Take vocal naps: 10 minutes of silence for every hour of heavy voice use.</li>
+      <li>Sleep 7–9 hours. Tired voices go flat and crack.</li>
+      <li>Use a microphone rather than shouting over a band.</li>
+      <li>Keep the air humid (40–60%) in dry or air-conditioned rooms.</li>
+      <li>Manage reflux: avoid big meals and spicy food within 3 hours of bed.</li>
+    </ul></div>
+    <div class="card"><h4 style="color:var(--bad)">Avoid</h4><ul class="ticks small">
+      <li>Smoking and vaping (dry and irritate the folds; smoking raises cancer risk).</li>
+      <li>Throat clearing and harsh coughing. Swallow or sip water instead.</li>
+      <li>Whispering to "rest" the voice; it can strain more than soft speech.</li>
+      <li>Shouting at matches, concerts or in noisy bars.</li>
+      <li>Singing through pain, hoarseness or laryngitis.</li>
+      <li>Too much alcohol and caffeine without extra water.</li>
+      <li>Medicated throat lozenges with menthol before singing; they numb warning signals.</li>
+      <li>Singing outside your range for long stretches to copy a recording.</li>
+    </ul></div>
+  </div>
+  <div class="block">
+    <h3>Is something wrong? A safety flowchart</h3>
+    <div class="card tree" id="healthTree"></div>
+    <p class="hint">This is general guidance, not medical advice. See a doctor or an ENT (ear, nose and throat) specialist, ideally a laryngologist, for any persistent voice change.</p>
+  </div>
+  <div class="block">
+    <h3>Myths and facts</h3>
+    <div class="grid g2" id="mythGrid"></div>
+  </div>
+  <div class="block">
+    <h3>Common voice problems</h3>
+    <div class="tablewrap"><table><thead><tr><th>Problem</th><th>What it is</th><th>Typical signs</th><th>What helps</th></tr></thead><tbody>
+      <tr><td><b>Vocal fatigue</b></td><td>Tired muscles and tissue after heavy use</td><td>Voice feels effortful, range shrinks late in the day</td><td>Rest, water, steam, better technique, shorter sessions</td></tr>
+      <tr><td><b>Laryngitis</b></td><td>Swelling of the folds from a virus or overuse</td><td>Hoarse or lost voice, sore throat</td><td>Voice rest, fluids, steam; see a doctor if over 2 weeks</td></tr>
+      <tr><td><b>Nodules</b></td><td>Callus-like bumps on both folds from repeated strain</td><td>Persistent hoarseness, breathiness, lost high notes</td><td>Diagnosis by ENT; voice therapy usually first</td></tr>
+      <tr><td><b>Polyp / cyst</b></td><td>A growth usually on one fold</td><td>Hoarseness, double tone, sudden change</td><td>ENT assessment; therapy and sometimes surgery</td></tr>
+      <tr><td><b>Haemorrhage</b></td><td>A burst blood vessel on the fold</td><td>Sudden voice loss during loud singing or shouting</td><td>Stop immediately, total voice rest, urgent ENT visit</td></tr>
+      <tr><td><b>Muscle tension dysphonia</b></td><td>Excess neck and throat muscle tension</td><td>Tight, strained voice, neck ache</td><td>Voice therapy, massage, relaxation, technique work</td></tr>
+      <tr><td><b>Reflux (LPR)</b></td><td>Stomach acid reaching the throat</td><td>Morning hoarseness, throat clearing, lump feeling</td><td>Diet and timing changes; doctor for treatment</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="block">
+    <h3>Performance day</h3>
+    <div class="flow">
+      <div class="node"><div class="tag" style="color:var(--muted)">Morning</div><p class="small">Light breakfast, water, gentle hums, minimal talking.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--muted)">3 hours before</div><p class="small">Last proper meal. Avoid dairy if it thickens your mucus, and avoid fizzy drinks.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--muted)">60 min before</div><p class="small">Full warm-up: body, breath, SOVT, range, a verse of the hardest song.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--muted)">10 min before</div><p class="small">Box breathing, sips of room-temperature water, quiet focus.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--muted)">After</div><p class="small">Cool-down sirens, water, rest the voice; avoid shouting at the after-party.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ USE CASES ============ -->
+<section class="chapter" id="use-cases" data-title="Use cases" data-group="Apply" data-lvl="2" hidden>
+  <div>
+    <div class="eyebrow">Real situations</div>
+    <h2>Use cases and examples</h2>
+    <p class="lede">What to focus on in situations singers actually face, each with a worked example.</p>
+  </div>
+  <div class="tabs" id="caseTabs"></div>
+  <div class="card block" id="caseBody"></div>
+  <div class="block">
+    <h3>Worked example: choosing the right key</h3>
+    <div class="card block">
+      <p class="small muted">Enter the song's lowest and highest melody notes, and your comfortable range. The atlas suggests how many semitones to transpose.</p>
+      <div class="row">
+        <label class="f">Song lowest <select id="kSongLo"></select></label>
+        <label class="f">Song highest <select id="kSongHi"></select></label>
+        <label class="f">My lowest <select id="kMyLo"></select></label>
+        <label class="f">My highest <select id="kMyHi"></select></label>
+        <button class="btn primary" id="kGo">Suggest key change</button>
+      </div>
+      <div id="kOut"></div>
+    </div>
+  </div>
+  <div class="block">
+    <h3>How to learn a new song in 7 steps</h3>
+    <div class="flow">
+      <div class="node"><div class="tag" style="color:var(--accent)">1</div><p class="small">Listen 5+ times. Notice form: verse, chorus, bridge.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">2</div><p class="small">Speak the lyrics in rhythm. Understand every line.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">3</div><p class="small">Hum or sing on "loo" to learn the melody without words.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">4</div><p class="small">Mark breaths in the lyrics with a ✓.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">5</div><p class="small">Drill the hardest phrase slowly, then in context.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">6</div><p class="small">Sing with the track, then a cappella, then record.</p></div><div class="arrow">→</div>
+      <div class="node"><div class="tag" style="color:var(--accent)">7</div><p class="small">Add your interpretation: dynamics, colour, story.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GLOSSARY & QUIZ ============ -->
+<section class="chapter" id="glossary" data-title="Glossary & quiz" data-group="Apply" data-lvl="1" hidden>
+  <div>
+    <div class="eyebrow">Reference</div>
+    <h2>Glossary and quiz</h2>
+  </div>
+  <div class="card block">
+    <input type="text" id="glossSearch" placeholder="Search terms, e.g. passaggio" aria-label="Search glossary">
+    <dl class="gloss" id="glossList"></dl>
+  </div>
+  <div class="block">
+    <h3>Check your understanding</h3>
+    <div class="card" id="quiz"></div>
+  </div>
+</section>
+
+<div class="chapter"><div class="pnav" id="pnav"></div></div>
+</main>
+</div>
+
+<script>
+/* ================= Audio engine ================= */
+let AC=null, master=null, analyser=null;
+const live=new Set();
+function ac(){
+  if(!AC){
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    master=AC.createGain(); master.gain.value=.9;
+    const comp=AC.createDynamicsCompressor();
+    analyser=AC.createAnalyser(); analyser.fftSize=2048;
+    master.connect(comp); comp.connect(analyser); analyser.connect(AC.destination);
+  }
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+const NN=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const ftom=f=>69+12*Math.log2(f/440);
+const nname=m=>NN[((m%12)+12)%12]+(Math.floor(m/12)-1);
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem('sa:'+k))}localStorage.setItem('sa:'+k,JSON.stringify(v))}catch(e){return null}}
+
+/* tone(): piano-like by default; 'voice' = soft sustained guide tone */
+function tone(m,t0,dur,o={}){
+  const a=ac(); const t=t0??a.currentTime;
+  const vol=o.vol??.22, kind=o.kind||'piano';
+  const g=a.createGain(); g.connect(master); g.gain.setValueAtTime(0,t);
+  const oscs=[];
+  const parts = kind==='piano' ? [[1,'triangle',1],[2,'sine',.35],[3,'sine',.12]]
+              : kind==='voice' ? [[1,'triangle',1],[2,'sine',.25]]
+              : [[1,o.wave||kind,1]];
+  parts.forEach(([mult,type,amp])=>{
+    const os=a.createOscillator(); os.type=type;
+    const f=mtof(m)*mult; os.frequency.setValueAtTime(f,t);
+    if(o.glideTo!=null) os.frequency.exponentialRampToValueAtTime(mtof(o.glideTo)*mult,t+dur*.92);
+    if(o.vibRate){
+      const lfo=a.createOscillator(), lg=a.createGain();
+      lfo.frequency.value=o.vibRate; lg.gain.value=0;
+      const depth=f*(Math.pow(2,(o.vibCents||35)/1200)-1);
+      lg.gain.setValueAtTime(o.vibDelay?0:depth,t);
+      if(o.vibDelay){lg.gain.setValueAtTime(0,t+o.vibDelay);lg.gain.linearRampToValueAtTime(depth,t+o.vibDelay+.5);}
+      lfo.connect(lg); lg.connect(os.frequency); lfo.start(t); lfo.stop(t+dur+.3); oscs.push(lfo);
+    }
+    const pg=a.createGain(); pg.gain.value=amp; os.connect(pg); pg.connect(g);
+    os.start(t); os.stop(t+dur+.35); oscs.push(os);
+  });
+  if(kind==='piano'){
+    g.gain.linearRampToValueAtTime(vol,t+.012);
+    g.gain.exponentialRampToValueAtTime(vol*.35,t+Math.min(.5,dur));
+    g.gain.setValueAtTime(vol*.35,t+dur); g.gain.exponentialRampToValueAtTime(.0001,t+dur+.3);
+  } else {
+    g.gain.linearRampToValueAtTime(vol,t+.08);
+    g.gain.setValueAtTime(vol,t+dur); g.gain.linearRampToValueAtTime(0,t+dur+.25);
+  }
+  oscs.forEach(x=>{live.add(x);x.onended=()=>live.delete(x)});
+  return t+dur;
+}
+function stopAll(){live.forEach(o=>{try{o.stop()}catch(e){}});live.clear();timers.forEach(clearTimeout);timers.length=0;}
+const timers=[];
+function later(fn,ms){timers.push(setTimeout(fn,ms));}
+function chord(root,ints,t,dur,vol=.12){ints.forEach(i=>tone(root+i,t,dur,{vol}));}
+
+/* Oscilloscope */
+(function scope(){
+  const c=$('#scope'), x=c.getContext('2d'); let buf;
+  function draw(){
+    requestAnimationFrame(draw);
+    if(c.offsetParent===null) return;
+    const w=c.width,h=c.height; x.clearRect(0,0,w,h);
+    const col=getComputedStyle(document.documentElement).getPropertyValue('--voice').trim()||'#d2412f';
+    x.strokeStyle=col; x.lineWidth=2.5; x.beginPath();
+    if(analyser){ if(!buf) buf=new Float32Array(analyser.fftSize); analyser.getFloatTimeDomainData(buf);
+      let start=0; for(let i=1;i<buf.length/2;i++){ if(buf[i-1]<0&&buf[i]>=0){start=i;break;} }
+      for(let i=0;i<w;i++){const v=buf[start+Math.floor(i*1.2)]||0; const y=h/2-v*h*1.4; i?x.lineTo(i,y):x.moveTo(i,y);}
+    } else { x.moveTo(0,h/2); x.lineTo(w,h/2); }
+    x.stroke();
+  }
+  draw();
+})();
+
+/* ================= Router ================= */
+const chapters=$$('main > section.chapter');
+const toc=$('#toc'); let lastGroup='';
+chapters.forEach((s,i)=>{
+  if(s.dataset.group!==lastGroup){ lastGroup=s.dataset.group; const g=document.createElement('div'); g.className='grp'; g.textContent=lastGroup; toc.appendChild(g); }
+  const a=document.createElement('a'); a.href='#'+s.id;
+  const lv=+s.dataset.lvl;
+  a.innerHTML=`<span class="k">${String(i+1).padStart(2,'0')}</span>${s.dataset.title}<span class="lvl-dots" title="Level">${[1,2,3].map(n=>`<i class="${n<=lv?'on':''}"></i>`).join('')}</span>`;
+  toc.appendChild(a);
+});
+function route(){
+  const id=(location.hash||'#start').slice(1);
+  const target=chapters.find(s=>s.id===id)||chapters[0];
+  chapters.forEach(s=>s.hidden=s!==target);
+  $$('#toc a').forEach(a=>{ if(a.getAttribute('href')==='#'+target.id) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  const i=chapters.indexOf(target), prev=chapters[i-1], next=chapters[i+1];
+  $('#pnav').innerHTML=(prev?`<a class="btn" href="#${prev.id}">← ${prev.dataset.title}</a>`:'<span></span>')+(next?`<a class="btn primary" href="#${next.id}">${next.dataset.title} →</a>`:'');
+  window.scrollTo(0,0);
+  const cur=$('#toc a[aria-current]'); if(cur&&window.innerWidth<900) cur.scrollIntoView({inline:'center',block:'nearest'});
+}
+addEventListener('hashchange',route);
+
+/* Global click helpers */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-playnote],[data-vol],[data-timbre],[data-chord]');
+  if(!t) return;
+  if(t.dataset.go) location.hash=t.dataset.go;
+  if(t.dataset.playnote) tone(+t.dataset.playnote,null,1.4);
+  if(t.dataset.vol) tone(57,null,1.4,{kind:'voice',vol:+t.dataset.vol});
+  if(t.dataset.timbre) tone(57,null,1.4,{kind:t.dataset.timbre,vol:t.dataset.timbre==='sawtooth'?.09:.22});
+  if(t.dataset.chord){const a=ac(); chord(60,t.dataset.chord.split(',').map(Number),a.currentTime,1.6,.13);}
+});
+
+/* ================= Piano ================= */
+function buildPiano(el,lo,hi,{onKey,label=true}={}){
+  const whites=[]; for(let m=lo;m<=hi;m++) if(!NN[m%12].includes('♯')) whites.push(m);
+  const W=100/whites.length; let html='';
+  whites.forEach((m,i)=>{html+=`<div class="wk" data-m="${m}" style="left:${i*W}%;width:${W}%">${label&&(m%12===0)?nname(m):''}</div>`;});
+  for(let m=lo;m<=hi;m++) if(NN[m%12].includes('♯')){
+    const i=whites.indexOf(m-1); html+=`<div class="bk" data-m="${m}" style="left:${(i+1)*W-W*.32}%;width:${W*.64}%"></div>`;
+  }
+  el.innerHTML=html; el.style.minWidth=Math.max(560,whites.length*22)+'px';
+  el.addEventListener('pointerdown',e=>{
+    const k=e.target.closest('[data-m]'); if(!k) return;
+    const m=+k.dataset.m; tone(m,null,1.2); k.classList.add('hit'); setTimeout(()=>k.classList.remove('hit'),250);
+    onKey&&onKey(m);
+  });
+}
+buildPiano($('#mainPiano'),36,84,{onKey:m=>{$('#pianoReadout').innerHTML=`<b class="mono">${nname(m)}</b> · ${mtof(m).toFixed(1)} Hz · MIDI ${m}. ${m===60?'This is middle C.':m===69?'A4 is the standard tuning note.':''}`;}});
+
+/* ================= Start: stages ================= */
+const STAGES=[
+ {n:'Beginner · months 0–3',c:'var(--good)',goal:'Make a free, healthy sound and match single pitches.',ms:['Stand and breathe correctly without thinking about it','Sustain a steady "sss" hiss for 20 seconds','Match a played note within ±25 cents','Sing a 5-note scale on lip trills and hums','Know the notes of the keyboard and your rough range','Sing a simple song (e.g. "Happy Birthday", a folk song) in tune'],focus:'Posture, breath, pitch matching, SOVT warm-ups, ear basics.'},
+ {n:'Intermediate · months 3–12',c:'var(--warn)',goal:'Connect the voice from bottom to top and add control.',ms:['Cross your passaggio without a crack on a siren','Find and use a mixed voice on a middle-high note','Sing arpeggios (1-3-5-8) cleanly in several keys','Recognise major/minor 3rds, 5ths and octaves by ear','Control dynamics: crescendo and decrescendo on one note','Hold a phrase of 8–10 seconds with even tone'],focus:'Registers, vowel modification, resonance, intervals, dynamics, repertoire.'},
+ {n:'Advanced · year 1+',c:'var(--voice)',goal:'Style, stamina and artistry on demand.',ms:['Sing fast runs and riffs accurately at tempo','Belt or sing high in a healthy, sustainable way','Use vibrato by choice (on, off, delayed)','Sing harmony against another part','Keep the voice healthy through a 90-minute performance','Interpret a song so the story lands with an audience'],focus:'Agility, belting, stylistic nuance, stamina, harmony, performance craft.'}
+];
+function showStage(i){const s=STAGES[i];$('#stageInfo').innerHTML=`<div class="eyebrow" style="color:${s.c}">${s.n}</div><h3 style="margin-top:.3rem">${s.goal}</h3><p class="small muted">Focus: ${s.focus}</p><h4>Milestones</h4><ul class="ticks small">${s.ms.map(m=>`<li>${m}</li>`).join('')}</ul>`;}
+$$('[data-stage]').forEach(g=>g.addEventListener('click',()=>showStage(+g.dataset.stage)));
+showStage(0);
+
+/* ================= Anatomy ================= */
+const PARTS={
+ lungs:['Lungs','Power','The air tank. You use only part of your capacity when singing; what matters is controlling how quickly air leaves.','Fill low and wide. Phrases run out because air escapes too fast at the start, not because the tank is small.'],
+ diaphragm:['Diaphragm','Power','A dome-shaped muscle under the lungs. It contracts and flattens downward to breathe in. It is an inhale muscle; you cannot "sing from" it directly.','Feel it by sniffing in slowly: the belly and lower ribs move outward.'],
+ ribs:['Ribs and intercostal muscles','Power','Muscles between the ribs widen the ribcage to inhale and help control the exhale.','Keep the ribs wide while singing (appoggio). Collapsing ribs dump air.'],
+ abs:['Abdominal muscles','Power','The main exhale muscles. They push gently inward to supply steady pressure.','Engage slowly and evenly; a sudden squeeze gives a pressed, loud tone.'],
+ trachea:['Trachea (windpipe)','Power','The tube carrying air from lungs to larynx.','Stays open; nothing to do here except keep good posture so it is not compressed.'],
+ larynx:['Larynx (voice box)','Source','A cartilage box that houses the vocal folds. Its front is the Adam\'s apple. Muscles inside tilt and stretch the folds to change pitch.','A comfortable, stable larynx position helps tone. Avoid jamming it down or letting it ride high on top notes.'],
+ pharynx:['Pharynx (throat)','Filter','The tube above the larynx. Its width changes your tone: open gives warmth and depth; narrow gives a thin, tight sound.','Think of the beginning of a yawn or a surprised inhale to open it.'],
+ softpalate:['Soft palate (velum)','Filter','The soft, movable back part of the roof of your mouth. Raised, it closes off the nose; lowered, sound goes nasal.','Lift it for most vowels; feel it rise when you start a yawn.'],
+ nasal:['Nasal cavity','Filter','Spaces behind the nose. Resonates on "m", "n" and "ng" and adds brightness.','Humming "mm" lets you feel this forward buzz.'],
+ mouth:['Mouth (oral cavity)','Filter','The most flexible resonator. Jaw opening and mouth shape decide much of the vowel and tone.','Drop the jaw (relaxed, not forced) for higher and louder notes.'],
+ tongue:['Tongue','Articulator','Shapes every vowel and most consonants. Tension at its root pushes on the larynx and strangles tone.','Rest the tip behind the lower front teeth for most vowels.'],
+ lips:['Lips','Articulator','Round for "oo"/"oh", spread for "ee". Shape consonants like b, p, m, w.','Lip trills relax them and balance air pressure.']
+};
+function showPart(k){
+  const p=PARTS[k]; const col={Power:'var(--accent)',Source:'var(--voice)',Filter:'var(--gold)',Articulator:'var(--c7)'}[p[1]];
+  $('#partInfo').innerHTML=`<div class="eyebrow" style="color:${col}">${p[1]}</div><h3 style="margin-top:.3rem">${p[0]}</h3><p>${p[2]}</p><div class="callout small"><b>Singer's tip:</b> ${p[3]}</div>`;
+  $$('#anatomySvg .part').forEach(g=>g.style.opacity=g.dataset.part===k?1:.55);
+}
+$$('#anatomySvg .part').forEach(g=>g.addEventListener('click',()=>showPart(g.dataset.part)));
+showPart('larynx');
+let breathing=false;
+$('#breatheBtn').addEventListener('click',()=>{
+  if(breathing) return; breathing=true;
+  const d=$('#diaphragm'), l=$('#lungs');
+  const inh=()=>{d.setAttribute('d','M20,496 Q134,470 248,496');l.style.transform='scale(1.08)';$('#breatheLbl').textContent='Inhale: diaphragm flattens down, ribs and belly widen.';};
+  const exh=()=>{d.setAttribute('d','M20,486 Q134,420 248,486');l.style.transform='scale(1)';$('#breatheLbl').textContent='Exhale (singing): abdominals push in slowly, diaphragm rises.';};
+  inh(); setTimeout(exh,2200); setTimeout(()=>{breathing=false;$('#breatheLbl').textContent='Inhale: diaphragm drops, lungs fill.'},4600);
+});
+
+/* Vocal folds animation */
+(function folds(){
+  let mode='breathe', m=57, ph=0;
+  const L=$('#foldL'),R=$('#foldR');
+  $$('[data-fold]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.fold;$$('[data-fold]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('#glottisLbl').textContent=mode==='breathe'?'glottis (open)':'';}));
+  const sl=$('#foldPitch');
+  const upd=()=>{m=+sl.value;$('#foldHz').textContent=`${Math.round(mtof(m))} Hz · ${nname(m)}`;};
+  sl.addEventListener('input',upd); upd();
+  $('#foldPlay').addEventListener('click',()=>tone(m,null,1.5,{kind:'voice',vol:.2}));
+  function frame(){
+    requestAnimationFrame(frame);
+    const len=1-(m-45)/36*.22; // higher pitch = stretched/thinner
+    const front=36, back=36+150*len+14*(1-len);
+    const thick=22-(m-45)/36*12;
+    let gap;
+    if(mode==='breathe') gap=34;
+    else { ph+=mtof(m)/50/60*2*Math.PI; gap=Math.max(0,4+5*Math.sin(ph)); }
+    L.setAttribute('points',`120,${front} ${120-gap-thick},${back} ${120-gap},${back}`);
+    R.setAttribute('points',`120,${front} ${120+gap+thick},${back} ${120+gap},${back}`);
+  }
+  frame();
+})();
+</script>
+<script>
+/* ================= Music basics ================= */
+const INTERVALS=[
+ [0,'Unison','Same note','Two voices on one pitch'],
+ [1,'Minor 2nd','Tense, close','"Jaws" theme'],
+ [2,'Major 2nd','Stepwise, open','"Happy Birthday" (Hap-py → birth)'],
+ [3,'Minor 3rd','Sad, gentle','"Greensleeves" (A-las)'],
+ [4,'Major 3rd','Bright, happy','"When the Saints Go Marching In"'],
+ [5,'Perfect 4th','Strong, calling','"Here Comes the Bride" / "Amazing Grace"'],
+ [6,'Tritone','Unstable, eerie','"Maria" (West Side Story), "The Simpsons"'],
+ [7,'Perfect 5th','Hollow, powerful','"Twinkle Twinkle" (twin-kle → twin-kle)'],
+ [8,'Minor 6th','Yearning','"The Entertainer" (3rd and 4th notes)'],
+ [9,'Major 6th','Warm, sweet','"My Bonnie Lies Over the Ocean"'],
+ [10,'Minor 7th','Bluesy, open','"Somewhere" (There\'s a place)'],
+ [11,'Major 7th','Dreamy, tense','"Take On Me" (chorus leap)'],
+ [12,'Octave','Same note, higher','"Somewhere Over the Rainbow" (Some-where)']
+];
+function playInterval(root,st,{harm=false}={}){const a=ac(),t=a.currentTime;tone(root,t,.7);tone(root+st,t+.75,.9);if(harm){chord(root,[0,st],t+1.8,1.2,.14);}}
+$('#intervalTable tbody').innerHTML=INTERVALS.map(([s,n,f,m])=>`<tr><td><b>${n}</b></td><td class="num">${s}</td><td>${f}</td><td class="small">${m}</td><td><button class="btn small" data-iv="${s}"><span class="play-ico"></span>Play</button></td></tr>`).join('');
+$('#intervalTable').addEventListener('click',e=>{const b=e.target.closest('[data-iv]');if(b)playInterval(60,+b.dataset.iv,{harm:true});});
+
+const SCALES={
+ 'Major (Ionian)':[[0,2,4,5,7,9,11,12],'The "Do-Re-Mi" scale. Bright and resolved. Most warm-ups use it.'],
+ 'Natural minor':[[0,2,3,5,7,8,10,12],'Darker, sadder. Same notes as the major scale three semitones above.'],
+ 'Harmonic minor':[[0,2,3,5,7,8,11,12],'Minor with a raised 7th: dramatic, Middle-Eastern flavour.'],
+ 'Major pentatonic':[[0,2,4,7,9,12],'Five notes, no clashes. The basis of countless pop, country, gospel and folk melodies.'],
+ 'Minor pentatonic':[[0,3,5,7,10,12],'The core of rock and R&B riffs. Learn runs on this first.'],
+ 'Blues':[[0,3,5,6,7,10,12],'Minor pentatonic plus the "blue note" (♭5). Gritty and soulful.'],
+ 'Chromatic':[[0,1,2,3,4,5,6,7,8,9,10,11,12],'All twelve semitones. Great for precise pitch control.']
+};
+$('#scaleSel').innerHTML=Object.keys(SCALES).map(k=>`<option>${k}</option>`).join('');
+function noteOptions(sel,lo,hi,def){sel.innerHTML='';for(let m=lo;m<=hi;m++){const o=document.createElement('option');o.value=m;o.textContent=nname(m);if(m===def)o.selected=true;sel.appendChild(o);}}
+noteOptions($('#scaleRoot'),45,67,60);
+function scaleInfo(){const [iv,d]=SCALES[$('#scaleSel').value];const r=+$('#scaleRoot').value;$('#scaleDesc').textContent=d;$('#scaleNotes').textContent=iv.map(i=>nname(r+i)).join('  ');}
+$('#scaleSel').addEventListener('change',scaleInfo);$('#scaleRoot').addEventListener('change',scaleInfo);scaleInfo();
+$('#scalePlay').addEventListener('click',()=>{stopAll();const [iv]=SCALES[$('#scaleSel').value];const r=+$('#scaleRoot').value;const seq=[...iv,...iv.slice(0,-1).reverse()];const a=ac();seq.forEach((i,k)=>tone(r+i,a.currentTime+k*.32,.3));});
+const SOLF=[['Do',0],['Re',2],['Mi',4],['Fa',5],['Sol',7],['La',9],['Ti',11],['Do',12]];
+$('#solfegeRow').innerHTML=SOLF.map(([n,s],i)=>`<button class="btn small" data-playnote="${60+s}">${i+1} · ${n}</button>`).join('');
+$('#harmDemo').addEventListener('click',()=>{stopAll();const a=ac(),t=a.currentTime;const mel=[60,62,64,65,67];const third=[64,65,67,69,71];mel.forEach((m,i)=>tone(m,t+i*.4,.38));mel.forEach((m,i)=>{tone(m,t+2.4+i*.4,.38,{vol:.18});tone(third[i],t+2.4+i*.4,.38,{vol:.14});});});
+
+/* Metronome */
+(function metro(){
+  let on=false,next=0,beat=0,tid=null;
+  const bpm=$('#bpm'),beats=$('#beats'),btn=$('#metroBtn');
+  const dots=()=>{$('#metroDots').innerHTML=Array.from({length:+beats.value},(_,i)=>`<span class="pill" data-b="${i}">${i+1}</span>`).join('');};
+  dots(); beats.addEventListener('change',dots);
+  bpm.addEventListener('input',()=>$('#bpmShow').textContent=bpm.value);
+  function click(t,acc){const a=ac();const o=a.createOscillator(),g=a.createGain();o.frequency.value=acc?1500:1000;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(acc?.5:.3,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.05);o.connect(g);g.connect(master);o.start(t);o.stop(t+.06);}
+  function sched(){const a=ac();while(next<a.currentTime+.12){const b=beat%(+beats.value);click(next,b===0);const delay=(next-a.currentTime)*1000;setTimeout(()=>{$$('#metroDots .pill').forEach(p=>p.className='pill'+(+p.dataset.b===b?' a':''));},Math.max(0,delay));next+=60/+bpm.value;beat++;}}
+  btn.addEventListener('click',()=>{on=!on;if(on){next=ac().currentTime+.05;beat=0;tid=setInterval(sched,25);btn.innerHTML='■ Stop';}else{clearInterval(tid);btn.innerHTML='<span class="play-ico"></span>Start';}});
+})();
+
+/* ================= Pitch detection ================= */
+function detectPitch(buf,sr){
+  let n=buf.length,rms=0;for(let i=0;i<n;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/n);if(rms<.012)return -1;
+  const minLag=Math.floor(sr/1100),maxLag=Math.min(Math.floor(sr/65),n-1);
+  const c=new Float32Array(maxLag+2);
+  for(let lag=minLag-1;lag<=maxLag+1;lag++){let s=0;for(let i=0;i<n-lag;i++)s+=buf[i]*buf[i+lag];c[lag]=s;}
+  let e0=0;for(let i=0;i<n;i++)e0+=buf[i]*buf[i];
+  let best=-1,bv=0;
+  for(let lag=minLag;lag<=maxLag;lag++){if(c[lag]>c[lag-1]&&c[lag]>=c[lag+1]&&c[lag]>bv){bv=c[lag];best=lag;}}
+  if(best<0||bv/e0<.3)return -1;
+  // prefer the first strong peak (avoid octave errors)
+  for(let lag=minLag;lag<best;lag++){if(c[lag]>c[lag-1]&&c[lag]>=c[lag+1]&&c[lag]>bv*.9){best=lag;break;}}
+  const x1=c[best-1],x2=c[best],x3=c[best+1],a=(x1+x3-2*x2)/2,b=(x3-x1)/2;
+  const T=a?best-b/(2*a):best;
+  return sr/T;
+}
+
+/* ================= Tuner ================= */
+const tuner={stream:null,src:null,an:null,buf:null,run:false,hist:[],hold:0,score:0,lo:null,hi:null,stable:[]};
+noteOptions($('#tTarget'),40,81,57);
+$('#tRef').addEventListener('click',()=>tone(+$('#tTarget').value,null,1.6,{kind:'voice',vol:.22}));
+$('#tRandom').addEventListener('click',()=>{const lo=+(store('rangeLo')||48),hi=+(store('rangeHi')||67);const m=lo+Math.floor(Math.random()*(Math.max(1,hi-lo)+1));$('#tTarget').value=m;tone(m,null,1.6,{kind:'voice',vol:.22});});
+$('#tMic').addEventListener('click',async()=>{
+  if(tuner.run){stopMic();return;}
+  try{
+    const a=ac();
+    tuner.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    tuner.src=a.createMediaStreamSource(tuner.stream);tuner.an=a.createAnalyser();tuner.an.fftSize=2048;tuner.src.connect(tuner.an);
+    tuner.buf=new Float32Array(tuner.an.fftSize);tuner.run=true;$('#tMic').textContent='■ Stop listening';
+    $('#tStatus').textContent='Listening. Sing an "ah" or "oo" on the target note.';
+    loopTuner();
+  }catch(err){
+    $('#tStatus').innerHTML='<b>The microphone is not available here.</b> Your browser or this view blocked it. Open the app file directly in Chrome, Edge, Firefox or Safari and allow the microphone, or upload a recording below.';
+  }
+});
+function stopMic(){tuner.run=false;tuner.stream&&tuner.stream.getTracks().forEach(t=>t.stop());$('#tMic').textContent='● Listen';$('#tStatus').textContent='Stopped.';}
+function centsTo(f,target){return 1200*Math.log2(f/mtof(target));}
+function showReading(f){
+  const target=+$('#tTarget').value;
+  if(f<0){$('#tVerdict').textContent='silence';$('#tVerdict').className='pill';return null;}
+  const m=Math.round(ftom(f)), centsNear=(ftom(f)-m)*100, cT=centsTo(f,target);
+  $('#tNote').innerHTML=`${nname(m)}<small id="tHz">${f.toFixed(1)} Hz</small>`;
+  const c=Math.max(-50,Math.min(50,cT));
+  $('#needle').style.transform=`rotate(${c*1.6}deg)`;
+  const off=Math.abs(cT);
+  $('#tCents').textContent=(cT>=0?'+':'−')+Math.abs(cT).toFixed(0)+' cents vs '+nname(target);
+  const v=off<=10?['in tune','b']:off<=25?['close','i']:cT>0?['sharp','a']:['flat','a'];
+  if(off>150) v[0]= cT>0?'too high':'too low';
+  $('#tVerdict').textContent=v[0];$('#tVerdict').className='pill '+v[1];
+  // range memory
+  tuner.stable.push(m);if(tuner.stable.length>8)tuner.stable.shift();
+  if(tuner.stable.length===8&&tuner.stable.every(x=>x===m)){if(tuner.lo==null||m<tuner.lo)tuner.lo=m;if(tuner.hi==null||m>tuner.hi)tuner.hi=m;store('trLo',tuner.lo);store('trHi',tuner.hi);}
+  return cT;
+}
+function drawTrail(cv,hist,target,opts={}){
+  const x=cv.getContext('2d'),w=cv.width,h=cv.height,cs=getComputedStyle(document.documentElement);
+  x.clearRect(0,0,w,h);
+  const span=opts.span||6, lo=opts.lo??target-span, hi=opts.hi??target+span, Y=m=>h-(m-lo)/(hi-lo)*h;
+  x.font='20px '+cs.getPropertyValue('--mono');
+  for(let m=Math.ceil(lo);m<=hi;m++){x.strokeStyle=cs.getPropertyValue('--line');x.lineWidth=1;x.beginPath();x.moveTo(60,Y(m));x.lineTo(w,Y(m));x.stroke();if((hi-lo)<=16||m%12===0||NN[m%12]==='C'){x.fillStyle=cs.getPropertyValue('--muted');x.fillText(nname(m),4,Y(m)+6);}}
+  if(target!=null){x.strokeStyle=cs.getPropertyValue('--good');x.globalAlpha=.25;x.fillStyle=cs.getPropertyValue('--good');x.fillRect(60,Y(target+.15),w,Y(target-.15)-Y(target+.15));x.globalAlpha=1;x.lineWidth=2;x.beginPath();x.moveTo(60,Y(target));x.lineTo(w,Y(target));x.stroke();}
+  x.strokeStyle=cs.getPropertyValue('--voice');x.lineWidth=4;x.lineJoin='round';x.beginPath();let pen=false;
+  const n=opts.n||hist.length; hist.forEach((m,i)=>{const px=60+(w-60)*i/Math.max(1,n-1);if(m==null||m<lo-2||m>hi+2){pen=false;return;}const py=Y(m);pen?x.lineTo(px,py):x.moveTo(px,py);pen=true;});x.stroke();
+}
+function loopTuner(){
+  if(!tuner.run)return;requestAnimationFrame(loopTuner);
+  tuner.an.getFloatTimeDomainData(tuner.buf);
+  const f=detectPitch(tuner.buf,AC.sampleRate);const cT=showReading(f);
+  const target=+$('#tTarget').value;
+  tuner.hist.push(f>0?ftom(f):null);if(tuner.hist.length>240)tuner.hist.shift();
+  drawTrail($('#tTrail'),tuner.hist,target,{n:240});
+  if(cT!=null&&Math.abs(cT)<=15){tuner.hold++;}else tuner.hold=Math.max(0,tuner.hold-2);
+  $('#tHold').style.width=Math.min(100,tuner.hold/120*100)+'%';
+  if(tuner.hold>=120){tuner.hold=0;tuner.score++;$('#tScore').textContent='Score '+tuner.score;$('#tStatus').textContent='Nice! Held for 2 seconds. Try "Random target" for the next one.';tone(target+12,null,.25,{vol:.12});}
+}
+drawTrail($('#tTrail'),[],57);
+$('#tFile').addEventListener('change',async e=>{
+  const file=e.target.files[0];if(!file)return;$('#tFileOut').textContent='Analysing…';
+  try{
+    const a=ac();const ab=await file.arrayBuffer();const audio=await a.decodeAudioData(ab);
+    const data=audio.getChannelData(0),sr=audio.sampleRate,win=Math.round(sr*.03),hop=Math.round(sr*.04);
+    const end=Math.min(data.length,sr*30);const hist=[];
+    for(let i=0;i+win<end;i+=hop){const f=detectPitch(data.subarray(i,i+win),sr);hist.push(f>0?ftom(f):null);}
+    const v=hist.filter(x=>x!=null);if(v.length<5){$('#tFileOut').textContent='No clear singing found. Try a louder, cleaner recording.';return;}
+    const dev=v.map(m=>(m-Math.round(m))*100);const absd=dev.map(Math.abs);
+    const mean=absd.reduce((s,x)=>s+x,0)/absd.length, within=absd.filter(x=>x<=20).length/absd.length, bias=dev.reduce((s,x)=>s+x,0)/dev.length;
+    const lo=Math.floor(Math.min(...v))-1,hi=Math.ceil(Math.max(...v))+1;
+    drawTrail($('#tTrail'),hist,null,{lo,hi});
+    $('#tFileOut').innerHTML=`<b>${Math.round(within*100)}%</b> of sung moments within ±20¢ of a note · average ${mean.toFixed(0)}¢ off · tendency ${Math.abs(bias)<4?'centred':bias>0?'slightly sharp':'slightly flat'} · range ${nname(Math.round(Math.min(...v)))}–${nname(Math.round(Math.max(...v)))}`;
+  }catch(err){$('#tFileOut').textContent='That file could not be read. Try an MP3, M4A or WAV.';}
+});
+
+/* Decision tree helper */
+function makeTree(el,nodes,start){
+  let path=[];
+  function show(id){
+    const n=nodes[id];
+    let html=`<div class="trail">${path.map(p=>`<span>${esc(p)}</span>`).join('')}</div>`;
+    if(n.q){html+=`<div class="q">${n.q}</div>${n.note?`<p class="small muted">${n.note}</p>`:''}<div class="row">${n.a.map(([l,to],i)=>`<button class="btn ${i===0?'primary':''}" data-to="${to}" data-l="${esc(l)}">${l}</button>`).join('')}</div>`;}
+    else {html+=`<div class="callout ${n.red?'red':''}"><h4>${n.t}</h4><p class="small" style="margin:0">${n.r}</p></div>${n.ex?`<p class="small"><b>Try:</b> ${n.ex}</p>`:''}`;}
+    html+=path.length?`<div><button class="btn small" data-restart>Start again</button></div>`:'';
+    el.innerHTML=html;
+  }
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-to],[data-restart]');if(!b)return;if(b.dataset.restart!==undefined){path=[];show(start);return;}path.push(b.dataset.l);show(b.dataset.to);});
+  show(start);
+}
+makeTree($('#pitchTree'),{
+ a:{q:'Can you hear when someone else sings out of tune?',a:[['Yes','b'],['No / not sure','x1']]},
+ x1:{t:'Start with listening, not singing',r:'Your pitch perception needs training first. Use the "Higher, lower or same?" game daily for two weeks. If you truly cannot hear differences after that, ask a teacher about an assessment for amusia. It is rare.',ex:'Higher/lower game, then pitch matching on single notes in your speaking range.'},
+ b:{q:'Can you match a single played note in your comfortable range?',note:'Test it with the pitch trainer above.',a:[['Yes, usually','c'],['No, I land on a different note','x2']]},
+ x2:{t:'Pitch matching: the voice and ear are not yet linked',r:'Start from your speaking pitch, not the piano\'s note. Sing any comfortable note, find it on the piano, then slide from it to the target. Sirens help you feel the pitch moving.',ex:'"Single-note pitch match" and "Sirens on ng" in the Exercise library.'},
+ c:{q:'Do you drift off pitch mostly on high notes?',a:[['Yes','x3'],['No','d']]},
+ x3:{t:'Register and tension issue',r:'Carrying too much chest weight up makes notes go sharp or crack, or you under-support and go flat. Lighten, narrow the vowel, and bridge with semi-occluded exercises.',ex:'"Lip trill sirens", "Gee octave slides", "Vowel modification ladder".'},
+ d:{q:'Do you drift mostly at the end of long phrases?',a:[['Yes','x4'],['No','e']]},
+ x4:{t:'Breath support runs out',r:'As air pressure drops, pitch sags flat. Plan breaths, spend air more slowly at the start of phrases, and keep the ribs wide.',ex:'Breathing pacer "Support builder", "Messa di voce", "Sustained hiss".'},
+ e:{q:'Do you go off mainly on jumps (big intervals)?',a:[['Yes','x5'],['No','f']]},
+ x5:{t:'Interval audiation',r:'You are guessing the second note instead of hearing it. Learn intervals with reference melodies and sing them slowly, hearing each target first.',ex:'Ear training "Name that interval", "Arpeggio 1-3-5-8-5-3-1".'},
+ f:{q:'Do you go off when singing with a band or a backing track?',a:[['Yes','x6'],['No','x7']]},
+ x6:{t:'Monitoring problem',r:'If you cannot hear yourself you push and go sharp; if the track is too quiet you lose the key. Turn your voice up in the monitor or earphones, use one earphone off, and practise with drones.',ex:'Sing against a held drone note (play a long note on the piano and match it).'},
+ x7:{t:'Fine-tuning and consistency',r:'You are close. Record full songs, compare with the original, and work phrase by phrase. Use the file analysis above to check bias towards sharp or flat.',ex:'Upload a recording above; aim for 80%+ within ±20 cents.'}
+},'a');
+
+/* Ear training */
+(function ear(){
+  let hl=null,hlS=0,hlN=0;
+  $('#hlPlay').addEventListener('click',()=>{const r=55+Math.floor(Math.random()*12);const d=[0,1,2,3,4,-1,-2,-3,-4][Math.floor(Math.random()*9)];hl={r,d};const a=ac();tone(r,a.currentTime,.7);tone(r+d,a.currentTime+.85,.8);});
+  $$('[data-hl]').forEach(b=>b.addEventListener('click',()=>{if(!hl){$('#hlOut').textContent='Press "Play pair" first.';return;}const ans=hl.d>0?'higher':hl.d<0?'lower':'same';hlN++;if(b.dataset.hl===ans)hlS++;$('#hlOut').innerHTML=`${b.dataset.hl===ans?'<b style="color:var(--good)">Correct.</b>':'<b style="color:var(--bad)">Not quite.</b>'} It was ${ans}${hl.d?` by ${Math.abs(hl.d)} semitone${Math.abs(hl.d)>1?'s':''}`:''}. Score: ${hlS} / ${hlN}`;hl=null;}));
+  let iv=null,ivS=0,ivN=0;
+  const sets={1:[4,7,12],2:[2,3,4,5,7,9,12],3:[1,2,3,4,5,6,7,8,9,10,11,12]};
+  function opts(){$('#ivOpts').innerHTML=sets[$('#ivLevel').value].map(s=>`<button class="btn small" data-ivans="${s}">${INTERVALS[s][1]}</button>`).join('');}
+  $('#ivLevel').addEventListener('change',opts);opts();
+  $('#ivPlay').addEventListener('click',()=>{const s=sets[$('#ivLevel').value];iv={r:53+Math.floor(Math.random()*10),s:s[Math.floor(Math.random()*s.length)]};playInterval(iv.r,iv.s);});
+  $('#ivRepeat').addEventListener('click',()=>iv&&playInterval(iv.r,iv.s));
+  $('#ivOpts').addEventListener('click',e=>{const b=e.target.closest('[data-ivans]');if(!b)return;if(!iv){$('#ivOut').textContent='Press "Play interval" first.';return;}ivN++;const ok=+b.dataset.ivans===iv.s;if(ok)ivS++;$('#ivOut').innerHTML=`${ok?'<b style="color:var(--good)">Correct.</b>':'<b style="color:var(--bad)">Not quite.</b>'} It was a ${INTERVALS[iv.s][1]}, like ${INTERVALS[iv.s][3]}. Score: ${ivS} / ${ivN}`;iv=null;});
+})();
+</script>
+<script>
+/* ================= Voice types ================= */
+const VT=[
+ {k:'Soprano',sex:'Female',col:'--c1',typ:[60,81],ext:[57,86],pass:[64,78],tess:'G4–G5',
+  d:'The highest voice type. Bright, ringing upper range; often carries the melody in choirs and the heroine in opera.',
+  ex:'Renée Fleming, Kathleen Battle, Kristin Chenoweth, Ariana Grande (often described as a light lyric soprano).',
+  tips:'Do not neglect the lower-middle range; build a warm middle so high notes have a foundation. Watch for thin, shrill tone on loud high notes.'},
+ {k:'Mezzo-soprano',sex:'Female',col:'--c2',typ:[57,77],ext:[53,81],pass:[64,76],tess:'D4–D5',
+  d:'Middle female voice with a richer, darker colour than soprano and a strong middle register. The most common female voice type.',
+  ex:'Cecilia Bartoli, Joyce DiDonato, Adele and Beyoncé (commonly described as mezzos).',
+  tips:'Resist pushing chest voice too high to sound "big"; a well-built mix keeps the top healthy.'},
+ {k:'Contralto',sex:'Female',col:'--c3',typ:[53,74],ext:[50,77],pass:[62,72],tess:'A3–A4',
+  d:'The lowest and rarest female voice. Dark, heavy, rich lower register that can overlap with tenor.',
+  ex:'Marian Anderson, Ewa Podleś, Tracy Chapman, Toni Braxton.',
+  tips:'Embrace your low range and choose keys for it. Head-voice work keeps the top open.'},
+ {k:'Countertenor',sex:'Male',col:'--c7',typ:[55,74],ext:[52,77],pass:[64,72],tess:'C4–C5',
+  d:'A male voice singing in the alto or mezzo range, usually through a highly developed head voice/falsetto. Central to Baroque music.',
+  ex:'Andreas Scholl, Philippe Jaroussky, Jakub Józef Orliński.',
+  tips:'Keep the speaking-range voice healthy too. Balance airflow so the tone is clear, not hooty.'},
+ {k:'Tenor',sex:'Male',col:'--c4',typ:[48,69],ext:[45,72],pass:[62,67],tess:'C4–G4',
+  d:'The highest common male voice. Bright, heroic high notes; the leading man in opera and many pop and rock bands.',
+  ex:'Luciano Pavarotti, Andrea Bocelli, Bruno Mars, Freddie Mercury (often debated).',
+  tips:'The passaggio around D4–G4 is the classic challenge. Learn vowel modification early; do not shout high notes.'},
+ {k:'Baritone',sex:'Male',col:'--c5',typ:[45,65],ext:[41,69],pass:[59,64],tess:'A2–A3/D4',
+  d:'The most common male voice. Warm, full middle with some low depth and high power.',
+  ex:'Frank Sinatra, Elvis Presley, Michael Bublé, Dmitri Hvorostovsky.',
+  tips:'Many baritones are mistaken for tenors or basses. Build the top with mix rather than forcing tenor keys.'},
+ {k:'Bass',sex:'Male',col:'--c6',typ:[40,62],ext:[36,65],pass:[57,62],tess:'E2–C4',
+  d:'The lowest male voice. Deep, resonant and powerful lows; the foundation of choirs and harmony groups.',
+  ex:'Feodor Chaliapin, Paul Robeson, Johnny Cash (bass-baritone), Barry White.',
+  tips:'Low notes need space and patience, not pressure. Keep the larynx relaxed rather than pressing down for depth.'}
+];
+(function rangeMap(){
+  const svg=$('#rangeMap'),lo=36,hi=90,X=m=>90+(m-lo)*(870/(hi-lo));let s='';
+  for(let m=lo;m<=hi;m++){ if(m%12===0){s+=`<line x1="${X(m)}" y1="28" x2="${X(m)}" y2="352" stroke="var(--line)"/><text x="${X(m)}" y="20" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--mono)">${nname(m)}</text>`;} }
+  s+=`<line x1="${X(60)}" y1="28" x2="${X(60)}" y2="352" stroke="var(--accent)" stroke-dasharray="3 3"/><text x="${X(60)}" y="372" text-anchor="middle" font-size="11" fill="var(--accent)">middle C</text>`;
+  VT.forEach((v,i)=>{const y=40+i*44;
+    s+=`<g class="part" data-vt="${i}"><text x="10" y="${y+17}" font-size="13" font-weight="700" fill="var(--ink)">${v.k}</text>
+    <rect x="${X(v.ext[0])}" y="${y+4}" width="${X(v.ext[1])-X(v.ext[0])}" height="20" rx="10" fill="var(${v.col})" opacity=".28"/>
+    <rect x="${X(v.typ[0])}" y="${y+4}" width="${X(v.typ[1])-X(v.typ[0])}" height="20" rx="10" fill="var(${v.col})"/>
+    <text x="${X(v.typ[0])+8}" y="${y+18}" font-size="10.5" fill="#fff" font-family="var(--mono)">${nname(v.typ[0])}</text>
+    <text x="${X(v.typ[1])-8}" y="${y+18}" font-size="10.5" fill="#fff" text-anchor="end" font-family="var(--mono)">${nname(v.typ[1])}</text>
+    ${v.pass.map(p=>`<line x1="${X(p)}" y1="${y}" x2="${X(p)}" y2="${y+28}" stroke="var(--ink)" stroke-width="2"/>`).join('')}</g>`;});
+  svg.innerHTML=s;
+  $('#vtLegend').innerHTML='<span>Female voices: soprano, mezzo-soprano, contralto</span><span>Male voices: countertenor, tenor, baritone, bass</span>';
+  svg.addEventListener('click',e=>{const g=e.target.closest('[data-vt]');if(!g)return;const v=VT[+g.dataset.vt];showVT(+g.dataset.vt);stopAll();const a=ac();const seq=[v.typ[0],v.typ[0]+4,v.typ[0]+7,v.pass[0],v.pass[1],v.typ[1]];seq.forEach((m,k)=>tone(m,a.currentTime+k*.45,.42,{kind:'voice',vol:.2}));});
+})();
+function showVT(i){const v=VT[i];$('#vtInfo').innerHTML=`<div class="eyebrow" style="color:var(${v.col})">${v.sex} voice</div><h3 style="margin-top:.3rem">${v.k}</h3><p>${v.d}</p>
+<div class="grid g2 small"><div><b>Typical range</b><br><span class="mono">${nname(v.typ[0])}–${nname(v.typ[1])}</span></div><div><b>Comfortable tessitura</b><br><span class="mono">${v.tess}</span></div><div><b>Approx. passaggi</b><br><span class="mono">${v.pass.map(nname).join(' and ')}</span></div><div><b>Trained extremes</b><br><span class="mono">${nname(v.ext[0])}–${nname(v.ext[1])}</span></div></div>
+<p class="small" style="margin-top:10px"><b>Commonly cited examples:</b> ${v.ex}</p><div class="callout small"><b>Training focus:</b> ${v.tips}</div>
+<div class="row" style="margin-top:10px"><button class="btn small" data-playnote="${v.typ[0]}">Lowest typical</button><button class="btn small" data-playnote="${v.typ[1]}">Highest typical</button></div>`;}
+showVT(4);
+noteOptions($('#vfLow'),36,72,48);noteOptions($('#vfHigh'),52,90,67);
+function suggest(lo,hi){
+  if(hi<=lo){$('#vfOut').innerHTML='<p class="small">The highest note must be above the lowest.</p>';return;}
+  store('rangeLo',lo);store('rangeHi',hi);
+  const sc=VT.map((v,i)=>({i,s:Math.abs(lo-v.typ[0])+Math.abs(hi-v.typ[1])})).sort((a,b)=>a.s-b.s);
+  const top=VT[sc[0].i],next=VT[sc[1].i],span=hi-lo;
+  $('#vfOut').innerHTML=`<div class="callout"><b>Closest match: ${top.k}</b>${sc[1].s-sc[0].s<=3?`, with ${next.k} also close`:''}.<br><span class="small">Your range ${nname(lo)}–${nname(hi)} spans ${span} semitones (${(span/12).toFixed(1)} octaves). ${span<14?'Most untrained voices start around 1.5 octaves; range grows with training.':span>24?'That is a wide range, well done.':'That is a typical range for a developing singer.'}</span></div><p class="small muted">Confirm with a teacher by listening to timbre and where your voice shifts gear. Your range is now used for "Random target" in the pitch trainer.</p>`;
+  showVT(sc[0].i);
+}
+$('#vfGo').addEventListener('click',()=>suggest(+$('#vfLow').value,+$('#vfHigh').value));
+$('#vfMic').addEventListener('click',()=>{const lo=store('trLo'),hi=store('trHi');if(lo==null||hi==null||hi-lo<3){$('#vfOut').innerHTML='<p class="small">Use the pitch trainer first: sing slowly from your lowest comfortable note to your highest, holding each for a moment. Then come back here.</p>';return;}$('#vfLow').value=lo;$('#vfHigh').value=hi;suggest(lo,hi);});
+
+/* ================= Breath & posture ================= */
+const POSE=[
+ ['Head','Balanced on top of the spine, chin level (not jutting forward or tucked). Imagine a string lifting the crown.'],
+ ['Shoulders','Back and down, relaxed. Roll them up, back and drop. They should not rise when you breathe.'],
+ ['Chest and ribs','Comfortably lifted and open, as if wearing a medal. Ribs stay wide while you sing.'],
+ ['Belly and hips','Belly free to expand. Pelvis neutral: not tilted forward with an arched back.'],
+ ['Knees','Soft, never locked. Locked knees cut circulation and add tension (singers have fainted this way).'],
+ ['Feet','Hip-width apart, weight spread across both feet, one slightly ahead if you like.']
+];
+$('#poseList').innerHTML=POSE.map(([h,t],i)=>`<div class="card" data-posei="${i}" style="padding:12px 14px"><b><span class="pill a" style="margin-right:8px">${i+1}</span>${h}</b><div class="small muted" style="margin-top:4px">${t}</div></div>`).join('');
+$$('[data-pose]').forEach(g=>g.addEventListener('click',()=>{$$('[data-posei]').forEach(c=>c.style.borderColor=c.dataset.posei===g.dataset.pose?'var(--voice)':'');}));
+(function pacer(){
+  let tid=null;
+  const orb=$('#orb'),lbl=$('#orbLbl'),cnt=$('#orbCnt');
+  function stop(){clearInterval(tid);tid=null;orb.style.transform='scale(1)';lbl.textContent='Ready';cnt.textContent='';}
+  $('#breathStop').addEventListener('click',stop);
+  $('#breathGo').addEventListener('click',()=>{
+    stop();const [i,h,o,h2]=$('#breathPat').value.split(',').map(Number);const rounds=+$('#breathRounds').value||5;
+    const phases=[];for(let r=0;r<rounds;r++){phases.push(['Breathe in',i,2.3]);if(h)phases.push(['Hold',h,2.3]);phases.push([o>=8?'Hiss out "sss"':'Breathe out',o,1]);if(h2)phases.push(['Hold',h2,1]);}
+    let p=0,left=phases[0][1];
+    const apply=()=>{const [n,d,sc]=phases[p];lbl.textContent=n;orb.style.transition=`transform ${d}s linear`;orb.style.transform=`scale(${sc})`;};
+    apply();cnt.textContent=left;
+    tid=setInterval(()=>{left--;if(left<=0){p++;if(p>=phases.length){stop();lbl.textContent='Done. Well breathed.';return;}left=phases[p][1];apply();}cnt.textContent=left;},1000);
+  });
+})();
+
+/* ================= Registers ================= */
+(function bridge(){
+  const svg=$('#bridgeSvg');
+  svg.innerHTML=`<path d="M60,180 L860,180 M60,180 L60,20" stroke="var(--line)"/>
+  <text x="460" y="210" text-anchor="middle" font-size="12" fill="var(--muted)">pitch rising →</text>
+  <text x="24" y="100" font-size="12" fill="var(--muted)" transform="rotate(-90 24 100)" text-anchor="middle">fold weight (chest → head)</text>
+  <rect x="380" y="20" width="140" height="160" fill="var(--voice-soft)" opacity=".6"/><text x="450" y="38" text-anchor="middle" font-size="12" fill="var(--voice)" font-weight="700">passaggio</text>
+  <path d="M60,50 L440,52 L452,160 L860,165" fill="none" stroke="var(--bad)" stroke-width="3"/>
+  <text x="300" y="44" font-size="12" fill="var(--bad)">Untrained: heavy chest pulled up, then a crack</text>
+  <path d="M60,62 C300,66 360,90 450,112 S640,152 860,158" fill="none" stroke="var(--good)" stroke-width="3"/>
+  <text x="560" y="118" font-size="12" fill="var(--good)">Trained: gradual blend through mix</text>`;
+})();
+const VOWELS={'ee (beet)':[270,2290,3010],'eh (bet)':[530,1840,2480],'ah (father)':[730,1090,2440],'aw (thought)':[570,840,2410],'oo (boot)':[300,870,2240]};
+function playVowel(f){
+  const a=ac(),t=a.currentTime,src=a.createOscillator();src.type='sawtooth';src.frequency.value=mtof(48);
+  const lfo=a.createOscillator(),lg=a.createGain();lfo.frequency.value=5.3;lg.gain.value=2.2;lfo.connect(lg);lg.connect(src.frequency);
+  const out=a.createGain();out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(.9,t+.1);out.gain.setValueAtTime(.9,t+1.3);out.gain.linearRampToValueAtTime(0,t+1.6);out.connect(master);
+  f.forEach((fr,i)=>{const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=fr;bp.Q.value=fr/[70,100,130][i];const g=a.createGain();g.gain.value=[1,.55,.3][i]*1.6;src.connect(bp);bp.connect(g);g.connect(out);});
+  src.start(t);lfo.start(t);src.stop(t+1.7);lfo.stop(t+1.7);live.add(src);live.add(lfo);
+}
+function drawFormant(name){
+  const f=VOWELS[name],svg=$('#formantSvg'),X=hz=>40+hz/4000*640;
+  let d='M40,160';for(let hz=0;hz<=4000;hz+=20){let a=0;f.forEach((fr,i)=>{const bw=[70,100,130][i]*1.6;a+=[1,.6,.35][i]/(1+((hz-fr)/bw)**2);});d+=` L${X(hz)},${160-Math.min(1.2,a)*110}`;}d+=' L680,160';
+  svg.innerHTML=`<path d="${d} Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+  <line x1="40" y1="160" x2="680" y2="160" stroke="var(--line)"/>${[0,1000,2000,3000,4000].map(h=>`<text x="${X(h)}" y="176" font-size="11" text-anchor="middle" fill="var(--muted)" font-family="var(--mono)">${h} Hz</text>`).join('')}
+  ${f.map((fr,i)=>`<text x="${X(fr)}" y="${30+i*0}" font-size="12" text-anchor="middle" fill="var(--voice)" font-weight="700">F${i+1}</text><text x="${X(fr)}" y="44" font-size="10" text-anchor="middle" fill="var(--muted)" font-family="var(--mono)">${fr}</text>`).join('')}
+  <rect x="${X(2500)}" y="56" width="${X(3500)-X(2500)}" height="104" fill="var(--gold)" opacity=".1"/><text x="${X(3000)}" y="70" font-size="10" text-anchor="middle" fill="var(--gold)">singer's formant zone</text>`;
+}
+$('#vowelBtns').innerHTML=Object.keys(VOWELS).map((k,i)=>`<button class="btn ${i===2?'primary':''}" data-vowel="${k}"><span class="play-ico"></span>${k}</button>`).join('');
+$('#vowelBtns').addEventListener('click',e=>{const b=e.target.closest('[data-vowel]');if(!b)return;$$('[data-vowel]').forEach(x=>x.classList.toggle('primary',x===b));drawFormant(b.dataset.vowel);playVowel(VOWELS[b.dataset.vowel]);});
+drawFormant('ah (father)');
+
+/* ================= Techniques ================= */
+const TECH=[
+ ['Beginner','Balanced onset','Starting a note with breath and fold closure at the same moment.','Think "ah" as if starting to speak calmly. Avoid a puff of air or a click before the tone.','Breathy "h" before vowels, or a harsh glottal attack.','The first word of "Amazing Grace" starts cleanly on the vowel.'],
+ ['Beginner','Legato','Smooth, connected singing with no gaps between notes.','Keep air flowing through consonants; join vowels; sing through the line like a bowed violin.','Chopping words into separate puffs.','Hymns and ballads like "Danny Boy".'],
+ ['Beginner','Diction','Clear consonants on top of open vowels.','Vowels carry the tone; consonants are quick and crisp. Final consonants land on time.','Dropping final consonants, or over-chewing words.','Musical theatre lyrics that must be understood in the back row.'],
+ ['Beginner','Dynamics','Controlling volume for expression.','Change pressure and resonance while keeping support. Practise on one note: p → f → p.','Getting breathy when soft, or shouting when loud.','A ballad verse sung softly, chorus fuller.'],
+ ['Intermediate','Mixed voice','A blend of chest and head coordination for strong, easy middle-high notes.','Approach from the top down with a "nay" or "gee", keep the sound forward and slightly bratty, and keep volume moderate.','Pulling chest up (yelling) or flipping to breathy falsetto.','Pop choruses that sit around tenor G4 or soprano D5–E5.'],
+ ['Intermediate','Vowel modification','Adjusting vowels slightly as pitch rises so the tract stays open.','"ah" → "uh/aw", "ee" → "ih", "ay" → "eh" as you go higher. Small changes, not new words.','Spreading "ee" and "ah" wide on high notes.','Classical singers on high notes; pop singers singing "I" as "ah".'],
+ ['Intermediate','Vibrato','A natural, regular pitch oscillation of about 5–7 cycles per second.','Let it appear on free, supported sustained notes. Then practise choosing straight tone or delayed vibrato.','Forcing it by shaking the jaw or belly.','Classical sustained notes; delayed vibrato at the ends of pop phrases.'],
+ ['Intermediate','Twang','A bright, focused sound made by narrowing the space above the folds (aryepiglottic narrowing).','Imitate a witch\'s cackle, a duck or a whiny "nyeh". Then add it subtly to a note.','Confusing twang with nasality (lowering the soft palate).','Country singing; a ringing belt; cutting through a band without more volume.'],
+ ['Intermediate','Head voice','Light, stretched-fold singing for the upper range.','Use "oo" sirens downward from the top, keep the larynx relaxed, think of the sound floating.','Breathiness, or tightening the throat to reach.','Classical upper range; soft high moments in ballads.'],
+ ['Advanced','Belting','A loud, speech-like, chest-dominant sound in the upper-middle range.','Uses a bright, open "eh/ah", twang, firm closure, high support and slightly higher larynx. Build it gradually with a teacher.','Shouting, a squeezed throat, or belting too high for too long.','Musical theatre showstoppers, gospel climaxes, pop power choruses.'],
+ ['Advanced','Riffs and runs (melisma)','Several notes on one syllable, sung quickly and precisely.','Learn the notes slowly on "ah", usually from the pentatonic scale, then speed up with a metronome. Keep the sound light.','Blurring notes, singing too heavy, or riffing with no purpose.','R&B and gospel: Whitney Houston, Stevie Wonder; Baroque coloratura in Handel.'],
+ ['Advanced','Messa di voce','Swelling a single note from soft to loud and back on one breath.','Start pianissimo, grow over 4 beats, shrink over 4 beats, without breaks or pitch drift.','Cracking or going sharp at the peak; going breathy at the end.','A classical test of control; also great for pop sustains.'],
+ ['Advanced','Agility and trills','Fast, accurate movement between notes, including alternating trills.','Start with 1-2-1-2-1 at slow tempo; double speed only when accurate.','Using the jaw or tongue to make the notes.','Baroque arias, Rossini, modern vocal runs.'],
+ ['Advanced','Distortion and grit','Rough textures (rasp, growl) added above clean phonation.','Created by vibrating structures above the folds, not by damaging them. Learn only with specialist guidance.','Pressing the folds, causing hoarseness.','Rock and metal; some gospel and blues singers.'],
+ ['Advanced','Vocal fry and breathy effects','Stylistic onset and release colours.','Use sparingly at phrase starts or ends for intimacy.','Using them all the time, which tires the voice.','Intimate pop and indie ballads.'],
+ ['Advanced','Harmony singing','Holding your own part against another melody.','Learn your line alone first, then against the melody played on piano; listen for the blend.','Drifting onto the melody line.','Gospel choirs, barbershop, worship teams, backing vocals.']
+];
+let tl='all';
+function renderTech(){$('#techGrid').innerHTML=TECH.filter(t=>tl==='all'||t[0]===tl).map(([l,n,w,h,m,e])=>`<div class="card"><div class="row" style="justify-content:space-between"><h4 style="margin:0">${n}</h4><span class="pill ${l[0].toLowerCase()}">${l}</span></div><p class="small" style="margin-top:6px">${w}</p><p class="small"><b>How:</b> ${h}</p><p class="small muted"><b>Common mistake:</b> ${m}</p><p class="small muted" style="margin:0"><b>Example:</b> ${e}</p></div>`).join('');}
+$$('[data-tlvl]').forEach(b=>b.addEventListener('click',()=>{tl=b.dataset.tlvl;$$('[data-tlvl]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderTech();}));
+renderTech();
+document.addEventListener('click',e=>{const b=e.target.closest('[data-vib]');if(!b)return;stopAll();const v=b.dataset.vib;if(v==='delayed'){tone(64,null,3,{kind:'voice',vol:.22,vibRate:5.5,vibCents:35,vibDelay:1.3});return;}const [r,c]=v.split(',').map(Number);tone(64,null,2.6,{kind:'voice',vol:.22,vibRate:r||0,vibCents:c});});
+const STYLES=[
+ ['Classical / opera','Full, round, unamplified; head-dominant on top; singer\'s formant','Constant, natural','Legato, messa di voce, coloratura, vowel modification, lowered stable larynx','Renée Fleming, Luciano Pavarotti'],
+ ['Musical theatre','Speech-like, clear diction; legit, mix and belt','Varies; often delayed','Belt, mix, acting through song, diction','Idina Menzel, Lea Salonga'],
+ ['Pop','Conversational, close to speech; mix and breathy colours','Light, often delayed','Breathy onsets, falsetto flips, vocal fry, runs','Adele, Ed Sheeran, Ariana Grande'],
+ ['R&B / soul','Warm, flexible; chest-mix with falsetto','Expressive','Riffs and runs, blue notes, slides, dynamics','Aretha Franklin, Stevie Wonder, Whitney Houston'],
+ ['Gospel','Powerful, emotional; high belts and choir blend','Expressive','Call and response, melisma, building climaxes, harmony','Mahalia Jackson, Kirk Franklin choirs, CeCe Winans'],
+ ['Rock','Bright, edgy, high energy; belt and grit','Little to none','Distortion, rasp, sustained high belts','Freddie Mercury, Ann Wilson, Chris Cornell'],
+ ['Jazz','Intimate, speech-like, rhythmic freedom','Light, often at phrase ends','Scat, phrasing behind the beat, extended harmony','Ella Fitzgerald, Billie Holiday, Frank Sinatra'],
+ ['Country / folk','Natural, storytelling; twang','Light','Twang, yodel flips, clear diction, harmony','Dolly Parton, Johnny Cash'],
+ ['Choral','Blended, unified vowels, accurate tuning','Reduced to blend','Intonation, vowel matching, sight-reading, breathing in sections','King\'s College Choir, gospel and community choirs']
+];
+$('#styleBody').innerHTML=STYLES.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td class="small muted">${r[4]}</td></tr>`).join('');
+</script>
+<script>
+/* ================= Exercises ================= */
+const MAJ=[0,2,4,5,7,9,11,12,14];
+const EX=[
+ {n:'Lip trills on 5 notes',lv:'Beginner',g:['Warm-up','Registers'],p:[0,2,4,5,7,5,4,2,0],sound:'Lip trill "brrr"',min:3,beat:.32,
+  how:['Relax your lips and blow so they flutter like a motorboat.','Press lightly on the cheeks with your fingertips if the lips stop.','Glide the 5-note pattern while keeping the trill going.'],why:'A semi-occluded vocal tract (SOVT) exercise: back-pressure balances the folds so they vibrate with less effort. The gold-standard first warm-up.',err:'Pushing more air when it stops. Use less air, more relaxed lips.'},
+ {n:'Humming on "mm"',lv:'Beginner',g:['Warm-up','Resonance'],p:[0,2,4,2,0],sound:'"mmm", lips closed, teeth apart',min:2,beat:.42,
+  how:['Close the lips gently, keep teeth apart and the tongue relaxed.','Hum the pattern and feel buzzing on the lips and nose.','If you feel it only in the throat, smile slightly and brighten.'],why:'Finds forward ("mask") resonance and warms the folds gently.',err:'Clenching the jaw or pressing the lips.'},
+ {n:'Sirens on "ng"',lv:'Beginner',g:['Warm-up','Registers','Pitch'],p:[0,12,0],glide:true,sound:'"ng" as in "sing"',min:2,beat:1.6,
+  how:['Hold the "ng" of "sing": back of the tongue touches the soft palate.','Slide smoothly from low to high and back like a fire siren.','Go only as high as feels easy; let it get lighter on top.'],why:'Explores your range and smooths register changes without vowel complications.',err:'Getting louder as you go up. Stay light.'},
+ {n:'Straw phonation',lv:'Beginner',g:['Warm-up','Health'],p:[0,4,7,4,0],sound:'Hum through a drinking straw',min:3,beat:.5,
+  how:['Put a straw between your lips and seal them around it.','Hum or sing the pattern through the straw; no air from the nose.','For extra back-pressure, put the straw into a glass of water and bubble.'],why:'The most efficient SOVT exercise; widely used by voice therapists to rebalance a tired voice.',err:'Puffing the cheeks. Keep them firm.'},
+ {n:'Single-note pitch match',lv:'Beginner',g:['Pitch'],p:[0,0,0],sound:'"ah" or "oo"',min:3,beat:1.4,
+  how:['Listen to the note fully before singing.','Hum it quietly inside your head (audiate), then sing it.','Use the pitch trainer to check you are within ±25 cents.'],why:'The first building block of singing in tune: linking hearing and voice.',err:'Starting before you have heard the note in your head.'},
+ {n:'Yawn-sigh',lv:'Beginner',g:['Warm-up','Health','Resonance'],p:[12,0],glide:true,sound:'Sigh on "hah" from high to low',min:1,beat:1.8,
+  how:['Begin a yawn to lift the soft palate and open the throat.','Sigh gently from a comfortable high note down to the bottom.','Keep it relaxed and slightly breathy.'],why:'Releases throat tension and lowers an elevated larynx.',err:'Forcing a full yawn or pressing the larynx down.'},
+ {n:'Staccato "ha"',lv:'Beginner',g:['Breath'],p:[0,4,7,4,0],sound:'Short "ha ha ha"',min:2,beat:.36,
+  how:['Hand on your belly. Each "ha" is a small inward bounce of the abdominals.','Keep notes short, light and separate, with clean onsets.','Release the belly between notes so air drops back in.'],why:'Builds the connection between abdominal support and clean onsets.',err:'Squeezing the throat to stop each note.'},
+ {n:'1-3-5-8-5-3-1 arpeggio',lv:'Intermediate',g:['Range','Pitch','Registers'],p:[0,4,7,12,7,4,0],sound:'"nay" or "nee"',min:3,beat:.36,
+  how:['Bright "nay" helps the voice stay forward through the jump.','Aim for the top note; do not reach up to it with the chin.','Keep the same lightness on the octave as on the root.'],why:'Covers an octave quickly; trains intervals and register coordination.',err:'Lifting the chin and getting louder on the top note.'},
+ {n:'Gee octave slides',lv:'Intermediate',g:['Registers','Range'],p:[0,12,0],glide:true,sound:'"gee" (hard g)',min:3,beat:1.5,
+  how:['The "g" gives a firm onset and keeps the folds closed.','Slide up the octave, staying slightly bratty and forward.','Keep volume moderate through the break.'],why:'A classic exercise for finding mixed voice and crossing the passaggio without flipping.',err:'Opening the vowel to "ga" on top. Keep it narrow.'},
+ {n:'Vowel modification ladder',lv:'Intermediate',g:['Registers','Resonance'],p:[0,2,4,5,7,5,4,2,0],sound:'"ee-eh-ah-oh-oo" on each note',min:3,beat:.5,
+  how:['Change vowel on each step while keeping the same space in the mouth.','Feel that the tone stays in the same place for every vowel.','As the pattern rises, let "ah" lean towards "uh".'],why:'Unifies vowels so the voice sounds even, and practises vowel modification.',err:'Jaw jumping between vowels.'},
+ {n:'Messa di voce',lv:'Intermediate',g:['Breath','Dynamics'],p:[0],sound:'"ah" held for 8 beats',min:3,beat:5,
+  how:['Start very softly, grow to medium-loud over 4 counts, shrink over 4.','Keep the pitch exactly steady (watch the trainer).','Do it on a comfortable middle note first.'],why:'The ultimate breath and fold control exercise.',err:'Going sharp at the loud peak or flat at the soft end.'},
+ {n:'9-note scale',lv:'Intermediate',g:['Range','Breath','Agility'],p:[0,2,4,5,7,9,11,12,14,12,11,9,7,5,4,2,0],sound:'"ah" or lip trill',min:3,beat:.24,
+  how:['Take one breath for the whole pattern.','Keep it legato and even.','Notice where the voice wants to flip, and lighten before it.'],why:'Builds breath stamina and range across a 9th, through the passaggio.',err:'Running out of air: spend less at the start.'},
+ {n:'Interval steps',lv:'Intermediate',g:['Pitch'],p:[0,3,0,4,0,5,0,7,0],sound:'"loo"',min:3,beat:.55,
+  how:['Each pair jumps from the root to a bigger interval: m3, M3, 4th, 5th.','Hear each target before you sing it.','Say the interval name in your head as you sing.'],why:'Connects the interval names from Music basics to your voice.',err:'Scooping into the higher note.'},
+ {n:'Pentatonic riff',lv:'Advanced',g:['Agility','Style'],p:[12,10,7,5,3,0],sound:'"ah", light',min:3,beat:.18,
+  how:['Learn the shape slowly at half speed first.','Keep each note distinct; think of tiny accents.','Speed up only when every note is in tune.'],why:'Minor pentatonic runs are the vocabulary of R&B, gospel, soul and rock.',err:'Sliding through notes so they blur.'},
+ {n:'Agility: 1-2-3-2-1 fast',lv:'Advanced',g:['Agility'],p:[0,2,4,2,0,2,4,2,0],sound:'"ah"',min:3,beat:.15,
+  how:['Light and quick; no aspirate "h" between notes.','The movement comes from the larynx, not the jaw.','Repeat in groups of 3 reps then rest.'],why:'Builds the fine control needed for coloratura and riffs.',err:'Jaw or tongue wobbling to make the notes.'},
+ {n:'Belt prep on "hey"',lv:'Advanced',g:['Style','Range'],p:[0,4,7,4,0],sound:'Call "hey!" like across a street',min:2,beat:.6,
+  how:['Speak "hey!" with energy, then sing it on the pattern.','Bright vowel, twang, firm support; no pressing.','Stop at the first sign of strain or scratchiness.'],why:'Introduces speech-level belt coordination safely in the lower-middle range.',err:'Shouting with a squeezed throat. Should feel energised, not painful.'},
+ {n:'Octave + 5th arpeggio',lv:'Advanced',g:['Range','Registers'],p:[0,4,7,12,16,19,16,12,7,4,0],sound:'"nee" or lip trill',min:3,beat:.26,
+  how:['Covers an octave and a fifth; start low enough.','Let the top get lighter and the vowel narrower.','Keep the larynx steady; do not chase the top note.'],why:'Builds full-range connection for advanced repertoire.',err:'Squeezing on the top; reduce volume.'},
+ {n:'Trill preparation',lv:'Advanced',g:['Agility','Style'],p:[0,2,0,2,0,2,0,2,0],sound:'"ah"',min:2,beat:.14,
+  how:['Alternate the two notes evenly, slowly at first.','Gradually increase speed until it becomes a shimmer.','Keep the throat completely free.'],why:'Classical ornament and a test of laryngeal agility.',err:'Turning it into a wide vibrato.'},
+ {n:'Cool-down sighs',lv:'Beginner',g:['Health','Warm-up'],p:[7,0],glide:true,sound:'Soft "oo" slides downward',min:2,beat:1.6,
+  how:['After singing, slide gently downward on "oo" or a lip trill.','Finish with a few quiet hums in speaking range.','Then drink water and rest your voice.'],why:'Returns the voice to speaking setting and reduces post-singing fatigue.',err:'Skipping it after long, loud sessions.'}
+];
+const goals=[...new Set(EX.flatMap(e=>e.g))];
+$('#exGoal').innerHTML='<option value="all">All goals</option>'+goals.map(g=>`<option>${g}</option>`).join('');
+let exSel=0, exStop=null;
+function exRender(){
+  const lv=$('#exLevel').value,g=$('#exGoal').value;
+  const list=EX.map((e,i)=>[e,i]).filter(([e])=>(lv==='all'||e.lv===lv)&&(g==='all'||e.g.includes(g)));
+  const mx=Math.max(...EX[0].p,1);
+  $('#exList').innerHTML=list.map(([e,i])=>{const top=Math.max(...e.p),lo=Math.min(...e.p);return `<button class="ex" data-ex="${i}" aria-selected="${i===exSel}"><div class="row" style="justify-content:space-between;width:100%"><b>${e.n}</b><span class="pill ${e.lv[0].toLowerCase()}">${e.lv}</span></div><div class="patt">${e.p.map(s=>`<i style="height:${15+(s-lo)/Math.max(1,top-lo)*85}%"></i>`).join('')}</div><div class="meta"><span class="small muted">${e.sound} · ${e.min} min</span></div></button>`}).join('')||'<p class="muted">No exercises match these filters.</p>';
+}
+function exDetail(){
+  const e=EX[exSel],root=+$('#exVoice').value;
+  $('#exDetail').innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill ${e.lv[0].toLowerCase()}">${e.lv}</span><span class="small muted">${e.g.join(' · ')}</span></div>
+  <h3 style="margin:0">${e.n}</h3><p class="small"><b>Sound:</b> ${e.sound}</p>
+  <div class="patt" id="exPatt" style="height:60px">${e.p.map((s,k)=>`<i data-k="${k}" style="height:${15+(s-Math.min(...e.p))/Math.max(1,Math.max(...e.p)-Math.min(...e.p))*85}%"></i>`).join('')}</div>
+  <p class="mono small" id="exNow">Pattern: ${e.p.map(s=>s%12===0&&s?(s/12>1?'8+':'8'):({0:'1',2:'2',3:'♭3',4:'3',5:'4',7:'5',9:'6',10:'♭7',11:'7',12:'8',14:'9',16:'10',19:'12'}[s]||s)).join('-')}${e.glide?' (glide)':''}</p>
+  <div class="row"><label class="f">Start <select id="exRoot"></select></label><label class="f">Repetitions <input type="number" id="exReps" min="1" max="12" value="5" style="width:80px"></label><label class="f">Speed <select id="exSpeed"><option value="1.4">Slow</option><option value="1" selected>Normal</option><option value=".75">Fast</option></select></label></div>
+  <div class="row"><button class="btn primary" id="exPlay"><span class="play-ico"></span>Play guided</button><button class="btn" id="exStopB">Stop</button></div>
+  <h4>Steps</h4><ol class="small" style="margin:0;padding-left:1.2em">${e.how.map(h=>`<li>${h}</li>`).join('')}</ol>
+  <div class="sunk small"><b>Why it works:</b> ${e.why}</div>
+  <div class="callout red small"><b>Watch out:</b> ${e.err}</div>`;
+  noteOptions($('#exRoot'),36,72,root);
+  $('#exPlay').addEventListener('click',()=>playEx(e));
+  $('#exStopB').addEventListener('click',()=>{stopAll();$('#exNow').textContent='Stopped.';});
+}
+function playEx(e){
+  stopAll();const a=ac();let t=a.currentTime+.1;const root=+$('#exRoot').value,reps=+$('#exReps').value||5,sp=+$('#exSpeed').value,beat=e.beat*sp;
+  for(let r=0;r<reps;r++){
+    const rr=root+r;
+    chord(rr,[0,4,7],t,.7,.1);tone(rr-12,t,.7,{vol:.1});
+    const cueT=t;later(()=>{$('#exNow').textContent=`Rep ${r+1}/${reps} · key of ${nname(rr)}`;},(cueT-a.currentTime)*1000);
+    t+=1.0;
+    if(e.glide){for(let k=0;k<e.p.length-1;k++)tone(rr+e.p[k],t+k*beat,beat,{kind:'voice',vol:.2,glideTo:rr+e.p[k+1]});t+=beat*(e.p.length-1)+.5;}
+    else e.p.forEach((s,k)=>{tone(rr+s,t,beat*.95,{kind:'piano',vol:.2});const tk=t;later(()=>{$$('#exPatt i').forEach(i=>i.classList.toggle('cur',+i.dataset.k===k));},(tk-a.currentTime)*1000);t+=beat;});
+    t+=.5;
+  }
+  later(()=>{$('#exNow').textContent='Done. Rest for a moment, then go again or try the next exercise.';$$('#exPatt i').forEach(i=>i.classList.remove('cur'));},(t-a.currentTime)*1000);
+}
+$('#exList').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;stopAll();exSel=+b.dataset.ex;exRender();exDetail();if(innerWidth<900)$('#exDetail').scrollIntoView({behavior:'smooth'});});
+['#exLevel','#exGoal'].forEach(s=>$(s).addEventListener('change',exRender));
+$('#exVoice').addEventListener('change',exDetail);
+exRender();exDetail();
+const mq=matchMedia('(max-width:900px)');const lay=()=>{$('#exLayout').style.gridTemplateColumns=mq.matches?'1fr':'minmax(0,1fr) minmax(0,1.05fr)';$('#exDetail').style.position=mq.matches?'static':'sticky';};mq.addEventListener('change',lay);lay();
+
+/* ================= Routine ================= */
+const ROUT={
+ 10:[['Body release',1,'Shoulder rolls, neck stretches, jaw massage, shake out.'],['Breath: hiss',1,'In 4, hiss out 8. Three rounds.'],['Lip trills on 5 notes',2,'Through the middle of your range.'],['Sirens on "ng"',2,'Low to high and back, light.'],['Arpeggio on "nay"',2,'1-3-5-8-5-3-1, a few keys.'],['Sing one song verse',2,'Apply everything gently.']],
+ 20:[['Body release',2,'Stretches, posture check, jaw and tongue release.'],['Breathing pacer',3,'Support builder pattern, 5 rounds.'],['Lip trills and straw',3,'5-note scales up and down.'],['Sirens and yawn-sighs',2,'Explore full range, lightly.'],['Pitch matching',3,'Pitch trainer: 5 random targets.'],['Range and registers',3,'Gee octave slides, vowel ladder.'],['Song work',3,'One tricky phrase slowly, then in context.'],['Cool-down',1,'Downward sighs and quiet hums.']],
+ 40:[['Body release',3,'Full stretch, posture, jaw, tongue, face.'],['Breathing pacer',4,'Support builder then long hiss.'],['SOVT warm-up',4,'Lip trills, straw, humming.'],['Ear training',4,'Intervals game and pitch trainer.'],['Registers',5,'Gee slides, vowel ladder, 9-note scale.'],['Agility and dynamics',5,'Messa di voce, 1-2-3-2-1 fast, riffs.'],['Repertoire',12,'Learn or polish a song; record a take.'],['Review recording',2,'Note one thing to improve tomorrow.'],['Cool-down',1,'Sighs, hums, water.']]
+};
+let rlen=20,rt={i:-1,left:0,tid:null};
+function rRender(){$('#routineList').innerHTML=ROUT[rlen].map(([n,m,d],i)=>`<div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px;padding:8px 10px;border-radius:8px;${i===rt.i?'background:var(--voice-soft)':''}"><span class="mono small" style="min-width:3.2em;color:var(--muted)">${m} min</span><div style="min-width:0"><b class="small">${n}</b><div class="small muted">${d}</div></div></div>`).join('');}
+$$('[data-rlen]').forEach(b=>b.addEventListener('click',()=>{rlen=+b.dataset.rlen;$$('[data-rlen]').forEach(x=>x.setAttribute('aria-pressed',x===b));rStop();rRender();}));
+function rStep(i){const st=ROUT[rlen];if(i>=st.length){rStop();$('#rtStep').textContent='Session complete!';$('#rtHow').textContent='Log it below to keep your streak.';$('#logMin').value=rlen;tone(72,null,.4);tone(76,ac().currentTime+.2,.4);tone(79,ac().currentTime+.4,.8);return;}rt.i=i;rt.left=st[i][1]*60;rt.total=rt.left;$('#rtStep').textContent=st[i][0];$('#rtHow').textContent=st[i][2];tone(84,null,.15,{vol:.12});rRender();rTick();}
+function rTick(){const m=Math.floor(rt.left/60),s=rt.left%60;$('#rtClock').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;$('#rtBar').style.width=(100-rt.left/rt.total*100)+'%';}
+function rStop(){clearInterval(rt.tid);rt.tid=null;rt.i=-1;rRender();$('#rtClock').textContent='00:00';$('#rtBar').style.width='0';$('#rtStep').textContent='Press start';$('#rtHow').textContent='';}
+$('#rtGo').addEventListener('click',()=>{if(rt.tid)return;rStep(0);rt.tid=setInterval(()=>{rt.left--;if(rt.left<=0)rStep(rt.i+1);else rTick();},1000);});
+$('#rtSkip').addEventListener('click',()=>{if(rt.tid)rStep(rt.i+1);});
+$('#rtStop').addEventListener('click',rStop);
+rRender();
+
+/* Practice log */
+const today=()=>new Date().toISOString().slice(0,10);
+$('#logDate').value=today();
+let LOG=store('log')||[];
+function dayOff(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10);}
+const EXAMPLE=[[1,15,'Warm-up','Example entry'],[2,25,'Pitch','Example entry'],[4,20,'Range','Example entry'],[5,30,'Repertoire','Example entry'],[6,10,'Breath','Example entry']].map(([o,m,f,n])=>({d:dayOff(o),m,f,n,ex:true}));
+function logRender(){
+  const rows=LOG.length?LOG:EXAMPLE;
+  const days=[...Array(14)].map((_,i)=>dayOff(13-i));
+  const per=days.map(d=>rows.filter(r=>r.d===d).reduce((s,r)=>s+ +r.m,0));
+  const mx=Math.max(30,...per),svg=$('#logChart'),bw=640/14;
+  svg.innerHTML=`<line x1="40" y1="140" x2="690" y2="140" stroke="var(--line)"/>${[0,.5,1].map(f=>`<text x="34" y="${140-f*110+4}" font-size="10" text-anchor="end" fill="var(--muted)" font-family="var(--mono)">${Math.round(mx*f)}</text><line x1="40" y1="${140-f*110}" x2="690" y2="${140-f*110}" stroke="var(--line)" opacity=".5"/>`).join('')}
+  ${per.map((v,i)=>`<rect x="${48+i*bw}" y="${140-v/mx*110}" width="${bw-10}" height="${v/mx*110}" rx="3" fill="var(--accent)" opacity="${LOG.length?1:.4}"/><text x="${48+i*bw+(bw-10)/2}" y="156" font-size="9.5" text-anchor="middle" fill="var(--muted)" font-family="var(--mono)">${days[i].slice(8)}</text>`).join('')}
+  <text x="690" y="166" font-size="10" text-anchor="end" fill="var(--muted)">minutes per day, last 14 days</text>`;
+  let streak=0;for(let i=0;i<365;i++){if(rows.some(r=>r.d===dayOff(i)))streak++;else if(i>0)break;}
+  const tot=rows.reduce((s,r)=>s+ +r.m,0);
+  $('#logStats').innerHTML=(LOG.length?'':'<span class="pill i">Example data. Your first entry replaces it.</span> ')+`${rows.length} sessions · ${tot} minutes total · current streak ${streak} day${streak===1?'':'s'}`;
+  $('#logBody').innerHTML=rows.slice().sort((a,b)=>b.d.localeCompare(a.d)).map((r)=>`<tr><td class="mono small">${r.d}</td><td class="num">${r.m}</td><td>${esc(r.f)}</td><td class="small ${r.ex?'muted':''}">${esc(r.n||'')}</td><td>${r.ex?'':`<button class="btn small" data-del="${LOG.indexOf(r)}" aria-label="Delete">✕</button>`}</td></tr>`).join('');
+}
+$('#logForm').addEventListener('submit',e=>{e.preventDefault();LOG.push({d:$('#logDate').value||today(),m:+$('#logMin').value||0,f:$('#logFocus').value,n:$('#logNote').value.trim()});store('log',LOG);$('#logNote').value='';logRender();});
+$('#logBody').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;LOG.splice(+b.dataset.del,1);store('log',LOG);logRender();});
+logRender();
+
+const WEEKS=[
+ ['1–2','Foundations','Posture, low breathing, lip trills and humming daily. Learn the keyboard note names.'],
+ ['3–4','Pitch matching','Pitch trainer every day; higher/lower game. Sirens to explore range.'],
+ ['5–6','Steady tone','Sustained notes, breath pacer support builder, staccato "ha". First simple song.'],
+ ['7–8','Find your voice type','Range finder, voice-type map. Choose 2 songs in your tessitura.'],
+ ['9','Registers','Gee slides and vowel ladder. Locate your passaggio.'],
+ ['10','Intervals','Interval game; arpeggios. Learn harmony on one chorus.'],
+ ['11','Expression','Dynamics, messa di voce, phrasing and the story of your song.'],
+ ['12','Performance','Record a full song; analyse pitch; sing for a friend or open mic.']
+];
+$('#weekPlan').innerHTML=WEEKS.map(([w,t,d])=>`<div class="card"><div class="eyebrow" style="color:var(--accent)">Week ${w}</div><h4 style="margin-top:6px">${t}</h4><p class="small muted" style="margin:0">${d}</p></div>`).join('');
+const SKILLS={Beginner:['Stand in balanced posture without reminders','Breathe low without lifting shoulders','Hiss evenly for 20 seconds','Match a single note within ±25¢','Sing a 5-note scale in tune','Do a 10-minute warm-up on my own'],Intermediate:['Siren through my break without cracking','Sing 1-3-5-8 arpeggios in tune','Name major/minor 3rds and 5ths by ear','Control a crescendo and decrescendo','Know my voice type and tessitura','Hold an even 10-second phrase'],Advanced:['Sing a riff accurately at tempo','Belt safely for a full chorus','Choose vibrato on, off or delayed','Hold a harmony part against the melody','Sing a 60-minute set without fatigue','Interpret lyrics with clear intent']};
+const CK=store('checks')||{};
+$('#skillChecks').innerHTML=Object.entries(SKILLS).map(([l,arr])=>`<div class="card"><span class="pill ${l[0].toLowerCase()}">${l}</span><div style="margin-top:8px">${arr.map((s,i)=>{const id=`ck-${l}-${i}`;return `<label class="check small" for="${id}"><input type="checkbox" id="${id}" ${CK[id]?'checked':''}>${s}</label>`}).join('')}</div><div class="meter" style="margin-top:8px"><i data-ckm="${l}"></i></div></div>`).join('');
+function ckM(){Object.entries(SKILLS).forEach(([l,arr])=>{const n=arr.filter((_,i)=>CK[`ck-${l}-${i}`]).length;$(`[data-ckm="${l}"]`).style.width=(n/arr.length*100)+'%';});}
+$('#skillChecks').addEventListener('change',e=>{CK[e.target.id]=e.target.checked;store('checks',CK);ckM();});ckM();
+</script>
+<script>
+/* ================= Health ================= */
+makeTree($('#healthTree'),{
+ a:{q:'Did you suddenly lose your voice, or feel a sharp pain, while singing or shouting?',a:[['Yes','r1'],['No','b']]},
+ r1:{red:true,t:'Stop singing and see an ENT promptly',r:'Sudden loss or pain during loud voice use can mean a vocal fold haemorrhage. Rest the voice completely (no whispering) and get seen quickly. Do not "test" it by singing.'},
+ b:{q:'Have you been hoarse for more than 2–3 weeks?',a:[['Yes','r2'],['No','c']]},
+ r2:{red:true,t:'Book a doctor or ENT appointment',r:'Persistent hoarseness needs a look at the folds (laryngoscopy), especially if you smoke or also have trouble swallowing, breathing or a lump in the neck.'},
+ c:{q:'Do you have a cold, flu or sore throat right now?',a:[['Yes','c2'],['No','d']]},
+ c2:{q:'Is your voice hoarse or does singing hurt?',a:[['Yes','r3'],['No, just congested','r4']]},
+ r3:{t:'Rest the voice',r:'Swollen folds bruise easily. Cancel heavy singing, speak softly and little, drink water, steam. Gentle straw phonation only if comfortable.'},
+ r4:{t:'Sing lightly if you must',r:'Congestion changes resonance but the folds may be fine. Hydrate, steam, warm up longer, and avoid pushing for volume or high notes.'},
+ d:{q:'Does your voice feel tired, tight or lower after singing?',a:[['Often','r5'],['Rarely','r6']]},
+ r5:{t:'Technique and load check',r:'Regular fatigue usually means too much pressure, singing too long, or keys too high. Shorten sessions, warm up and cool down, review support and registers, and consider lessons. If it persists, see a voice specialist.'},
+ r6:{t:'You are in good shape',r:'Keep up hydration, warm-ups, sleep and sensible practice length. Re-check if anything changes.'}
+},'a');
+const MYTHS=[
+ ['Honey and lemon coat your vocal folds.','Nothing you drink touches the folds (it goes down the oesophagus). Warm drinks soothe the throat, and hydration helps over hours, but nothing coats the folds directly.'],
+ ['Sing from your diaphragm.','The diaphragm is an inhale muscle and has no feeling nerves you can control directly. "Support" comes from coordinating abdominal and rib muscles to control the exhale.'],
+ ['Some people are born tone deaf.','True amusia is rare (around 1.5–4% of people). Most "tone deaf" singers simply have not trained the link between ear and voice.'],
+ ['Whispering rests the voice.','Forced whispering can strain the folds. Quiet, easy speech or silence is better.'],
+ ['Dairy ruins your voice.','It thickens mucus for some people, not all. Notice how your own voice responds.'],
+ ['Singing high means you are a soprano or tenor.','Range alone does not decide voice type. Timbre, tessitura and passaggi matter more.'],
+ ['Vibrato is something you add.','Healthy vibrato appears naturally when breath and throat are free. Forced vibrato usually sounds like a wobble.'],
+ ['You have to be naturally talented.','Singing is a motor skill. Consistent, smart practice produces large improvements for almost everyone.']
+];
+$('#mythGrid').innerHTML=MYTHS.map(([m,f])=>`<div class="card"><span class="pill a">Myth</span><p style="margin:.5rem 0;font-weight:600">${m}</p><span class="pill b">Fact</span><p class="small muted" style="margin:.5rem 0 0">${f}</p></div>`).join('');
+
+/* ================= Use cases ================= */
+const CASES=[
+ ['Choir audition','Choirs want accurate pitch, blend, and reading.',['Prepare a short piece that shows your tessitura, not your extremes.','Expect range checks and echo-back tests (sing back a phrase).','Practise sight-reading simple melodies with solfège.','Blend: less vibrato, matched vowels.'],'Example: Maya, an alto, was asked to sing back 3-note phrases. She used daily interval training for 4 weeks and matched every phrase. Her short folk song sat around A3–A4, her most comfortable zone.'],
+ ['Karaoke night','Fun, but loud bars are hard on voices.',['Choose songs in your key (use the transpose tool below) or pick ones with a key-change option.','Warm up in the car with lip trills.','Keep the mic close; let it do the volume.','Avoid shouting to friends between songs.'],'Example: Raj loves "Livin\' on a Prayer" but the chorus is too high. He picked a song in his baritone range instead and sang it confidently.'],
+ ['Wedding or family event','One song, high stakes, emotional room.',['Learn the song 4–6 weeks ahead.','Rehearse with the actual accompaniment and in the venue if possible.','Mark breaths; nerves shorten breath.','Use box breathing before you sing.'],'Example: For "Ave Maria", Lena took it down a tone so the top was comfortable, and rehearsed it weekly with the pianist.'],
+ ['Singing in a band','Loud environments, long sets.',['Insist on hearing yourself in the monitor or in-ear mix.','Plan the set so demanding songs are spread out.','Use a mic technique: back off on loud notes, close in on soft.','Water on stage; vocal rest the next day.'],'Example: Sam went sharp every gig. The cause was not hearing his voice. In-ear monitors fixed his pitch and his throat stopped hurting.'],
+ ['Recording studio','Microphones hear everything.',['Use consistent distance from the mic (about a hand\'s width).','Record several takes; the engineer can comp the best phrases.','Watch plosives (p, b) with a pop filter.','Stay hydrated; studio air is dry.'],'Example: Ana\'s first demo sounded nasal. Recording herself at home first helped her hear it and open the soft palate.'],
+ ['Worship team','Lead others; sing weekly, often early.',['Pick keys the congregation can sing (often lower than recordings).','Warm up before morning services; voices are stiff early.','Learn harmony parts so the team blends.','Sing clear words; people follow your diction.'],'Example: A worship leader lowered songs from B to G so the congregation joined in, and the team added a third above the melody on choruses.'],
+ ['Musical theatre audition','Acting, belt, mix and style.',['Prepare a 16- or 32-bar cut that shows your best range.','Contrast an up-tempo and a ballad.','Act the lyric: who are you singing to and why?','Bring clearly marked sheet music for the pianist.'],'Example: Jo chose a 32-bar cut that ended on her strongest belt note (D5) rather than a riskier higher song.'],
+ ['Teaching children','Young voices are light and high.',['Pitch songs around D4–D5 for children, not in an adult man\'s speaking range.','Model in head voice so they can match it.','Short, playful warm-ups: sirens, animal sounds.','Never ask them to sing loud for long.'],'Example: A teacher moved a class song up a fourth into the children\'s range and suddenly everyone could sing in tune.']
+];
+$('#caseTabs').innerHTML=CASES.map((c,i)=>`<button class="btn ${i?'':'primary'}" data-case="${i}">${c[0]}</button>`).join('');
+function showCase(i){const c=CASES[i];$('#caseBody').innerHTML=`<h3 style="margin:0">${c[0]}</h3><p class="muted">${c[1]}</p><div class="grid g2"><div><h4>Focus on</h4><ul class="ticks small">${c[2].map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="callout small">${c[3]}</div></div>`;$$('[data-case]').forEach(b=>b.classList.toggle('primary',+b.dataset.case===i));}
+$('#caseTabs').addEventListener('click',e=>{const b=e.target.closest('[data-case]');if(b)showCase(+b.dataset.case);});showCase(0);
+noteOptions($('#kSongLo'),36,84,57);noteOptions($('#kSongHi'),40,90,74);noteOptions($('#kMyLo'),36,84,store('rangeLo')||48);noteOptions($('#kMyHi'),40,90,store('rangeHi')||67);
+$('#kGo').addEventListener('click',()=>{
+  const sl=+$('#kSongLo').value,sh=+$('#kSongHi').value,ml=+$('#kMyLo').value,mh=+$('#kMyHi').value;
+  if(sh<=sl||mh<=ml){$('#kOut').innerHTML='<p class="small">Check the notes: each highest note must be above its lowest.</p>';return;}
+  const ss=sh-sl,ms=mh-ml;
+  if(ss>ms){$('#kOut').innerHTML=`<div class="callout red small">The song spans ${ss} semitones but your comfortable range spans ${ms}. No key fits completely. Choose a key that puts the <b>highest</b> note in reach (shift ${mh-sh>0?'+':''}${mh-sh}) and lighten the lowest notes, or pick another song.</div>`;return;}
+  const lo=ml-sl,hi=mh-sh,shift=Math.max(lo,Math.min(hi,Math.round((lo+hi)/2)));
+  const moveAround=hi-lo;
+  $('#kOut').innerHTML=`<div class="callout small" style="margin-top:10px"><b>Transpose ${shift===0?'nothing: the original key fits':(shift>0?'up ':'down ')+Math.abs(shift)+' semitone'+(Math.abs(shift)>1?'s':'')}.</b> The melody will run ${nname(sl+shift)}–${nname(sh+shift)}, centred in your range. Any shift from ${lo>0?'+':''}${lo} to ${hi>0?'+':''}${hi} fits (${moveAround+1} options).</div><div class="row" style="margin-top:8px"><button class="btn small" data-playnote="${sl+shift}">Hear new lowest</button><button class="btn small" data-playnote="${sh+shift}">Hear new highest</button></div>`;
+});
+
+/* ================= Glossary & quiz ================= */
+const GLOSS=[
+ ['A4 = 440 Hz','The standard tuning pitch for the A above middle C.'],['Appoggio','Classical breath-support technique balancing inhale and exhale muscles.'],['Arpeggio','The notes of a chord sung one after another, e.g. 1-3-5-8.'],['Audiation','Hearing music in your head before or without singing it.'],['Belting','Loud, speech-like, chest-dominant singing in the upper-middle range.'],['Breath support','Controlled management of air pressure during singing.'],['Cent','One hundredth of a semitone. Used to measure how in tune a note is.'],['Chest voice','Lower register with thicker vocal fold vibration; feels like speaking.'],['Coloratura','Fast, ornate passages; also a light, agile soprano type.'],['Diaphragm','Dome-shaped muscle under the lungs used for inhaling.'],['Diction','Clarity of words: vowels and consonants.'],['Dynamics','Volume levels and changes (p, f, crescendo).'],['Fach','German system for classifying classical voices by range, weight and colour.'],['Falsetto','Light, airy register where only the fold edges vibrate.'],['Formant','A resonance peak of the vocal tract that shapes vowels and timbre.'],['Glottis','The space between the vocal folds.'],['Head voice','Upper register with thinner, stretched folds.'],['Interval','The distance between two pitches, measured in semitones.'],['Larynx','The voice box, containing the vocal folds.'],['Legato','Smooth, connected singing.'],['Melisma','Several notes on a single syllable (runs and riffs).'],['Messa di voce','Swelling a note from soft to loud and back.'],['Mixed voice','A balanced coordination blending chest and head qualities.'],['Onset','The way a note begins: breathy, balanced or glottal.'],['Passaggio','The transition area between registers.'],['Pharynx','The throat space above the larynx.'],['Pitch','How high or low a note sounds, set by frequency.'],['Range','All the notes a voice can produce.'],['Register','A series of notes produced with the same fold setting.'],['Resonance','Amplification and colouring of sound by the vocal tract.'],['Semitone','The smallest interval in Western music; one piano key to the next.'],['Singer\'s formant','A resonance cluster around 2.5–3.5 kHz that makes trained voices ring.'],['Soft palate','The movable back of the roof of the mouth (velum).'],['Solfège','Do-Re-Mi syllables for scale degrees.'],['SOVT','Semi-occluded vocal tract exercises: lip trills, straws, humming.'],['Staccato','Short, detached notes.'],['Support','See breath support.'],['Tessitura','The part of the range where a voice is most comfortable, or where a song sits.'],['Timbre','The colour or quality of a sound.'],['Transpose','Move a song to a different key.'],['Twang','A bright, focused quality made by narrowing above the folds.'],['Vibrato','A regular, natural pitch oscillation of about 5–7 Hz.'],['Vocal folds','Two bands of muscle and tissue in the larynx that vibrate to make sound.'],['Vocal fry','The lowest register: a creaky, popping sound.'],['Vowel modification','Adjusting vowel shapes as pitch rises to keep the tone free.'],['Whistle register','The highest register, above about C6.']
+];
+function glossRender(){const q=$('#glossSearch').value.toLowerCase();$('#glossList').innerHTML=GLOSS.filter(([t,d])=>(t+d).toLowerCase().includes(q)).map(([t,d])=>`<dt>${t}</dt><dd>${d}</dd>`).join('')||'<dd>No matching terms.</dd>';}
+$('#glossSearch').addEventListener('input',glossRender);glossRender();
+const QUIZ=[
+ ['What makes the sound of your voice in the first place?',['The diaphragm','The vibrating vocal folds','The tongue','The nasal cavity'],1,'The folds are the source; everything else powers or shapes it.'],
+ ['A4 vibrates at 440 Hz. What is A5?',['660 Hz','880 Hz','520 Hz','1,320 Hz'],1,'One octave up doubles the frequency.'],
+ ['How many cents are in a semitone?',['10','50','100','1,200'],2,'100 cents per semitone, 1,200 per octave.'],
+ ['Which breathing style should singers aim for?',['High chest (clavicular)','Low rib-and-belly','Shoulder breathing','Mouth-only'],1,'Costal-diaphragmatic breathing gives the most air and control.'],
+ ['What is the passaggio?',['A type of vibrato','The transition between registers','A breathing exercise','A song form'],1,'It\'s where registers change and voices may crack.'],
+ ['Which is a semi-occluded (SOVT) exercise?',['Shouting "hey"','Lip trills','Whispering','Clearing the throat'],1,'Lip trills, straws and humming partially close the mouth to balance pressure.'],
+ ['Which is the lowest female voice type?',['Soprano','Mezzo-soprano','Contralto','Countertenor'],2,'Contralto is the lowest and rarest female voice.'],
+ ['Healthy vibrato is usually about…',['1–2 cycles per second','5–7 cycles per second','12–15 cycles per second','It does not move'],1,'Around 5–7 Hz, roughly ±¼ to ½ semitone.'],
+ ['You go flat at the end of long phrases. The most likely cause?',['Too much support','Breath support running out','Too bright a vowel','Vibrato'],1,'Falling air pressure lets pitch sag.'],
+ ['What is vowel modification?',['Changing the words','Adjusting vowel shapes as pitch rises','Singing only "ah"','Pronouncing in another accent'],1,'Small vowel shifts keep the tract open on high notes.'],
+ ['You have been hoarse for four weeks. What should you do?',['Sing through it','Drink more tea','See a doctor or ENT','Whisper instead'],2,'Persistent hoarseness needs a specialist check.'],
+ ['What does "tessitura" mean?',['Your full range','Your comfortable singing zone','The tempo of a song','A kind of onset'],1,'Choose keys by tessitura, not just range.'],
+ ['Which interval starts "Somewhere Over the Rainbow"?',['Perfect 5th','Major 3rd','Octave','Minor 2nd'],2,'"Some-where" leaps an octave.'],
+ ['Do honey and tea coat the vocal folds?',['Yes, directly','No, swallowed liquid never touches the folds','Only if hot','Only honey'],1,'Hydration helps from the inside over time.'],
+ ['Which balanced onset is best for everyday singing?',['Glottal (hard)','Breathy (aspirate)','Simultaneous (balanced)','None'],2,'Air and closure start together for a clean, healthy start.']
+];
+let qi=0,qs=0,qans=false;
+function quiz(){
+  const box=$('#quiz');
+  if(qi>=QUIZ.length){const best=Math.max(qs,store('quizBest')||0);store('quizBest',best);box.innerHTML=`<h3>You scored ${qs} / ${QUIZ.length}</h3><p class="muted">${qs>=13?'Excellent. You understand the voice like a pro.':qs>=9?'Good work. Review the chapters where you slipped.':'Keep going. Re-read How the voice works and Singing in tune, then try again.'} Best score: ${best}.</p><button class="btn primary" id="qAgain">Try again</button>`;$('#qAgain').addEventListener('click',()=>{qi=0;qs=0;quiz();});return;}
+  const [q,o,a,ex]=QUIZ[qi];qans=false;
+  box.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill">Question ${qi+1} of ${QUIZ.length}</span><span class="mono small">Score ${qs}</span></div><h4 style="margin-top:12px;font-size:1.15rem">${q}</h4>${o.map((t,i)=>`<button class="opt" data-qo="${i}">${t}</button>`).join('')}<p class="small muted" id="qEx"></p><button class="btn primary" id="qNext" hidden>Next →</button>`;
+  box.querySelectorAll('[data-qo]').forEach(b=>b.addEventListener('click',()=>{if(qans)return;qans=true;const i=+b.dataset.qo;if(i===a){qs++;b.classList.add('right');}else{b.classList.add('wrong');box.querySelector(`[data-qo="${a}"]`).classList.add('right');}$('#qEx').textContent=ex;$('#qNext').hidden=false;}));
+  $('#qNext').addEventListener('click',()=>{qi++;quiz();});
+}
+quiz();
+
+window.claude?.hot?.ready ? window.claude.hot.ready(route) : route();
+</script>
+
+</body>
+</html>
